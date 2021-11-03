@@ -1,5 +1,7 @@
 ArrayList<Body> bodies = new ArrayList<Body>();
 long tLast;
+boolean paused=false;
+boolean step=false;
 
 void setup() {
   size(800,800);
@@ -10,15 +12,21 @@ void setup() {
 }
 
 void reset() {
+  println("reset()");
   bodies.clear();
+  paused=false;
+  step=false;
 }
 
 void keyReleased() {
   println("key="+key);
   switch(key) {
-    case 1:  testRandomShapes();  break;
-    case 2:  testOneBoxAndOneCircle(); break;
-    case 3:  testTwoCircles();  break;
+    case '1':  testRandomShapes();  break;
+    case '2':  testOneBoxAndOneCircle(); break;
+    case '3':  testTwoCircles();  break;
+    case '4':  testOneBallAndWall();  break;
+    case '5':  testOneBoxAndWall();  break;
+    case ' ':  step=true;  break;
     default: break;
   }
 }
@@ -29,7 +37,12 @@ void draw() {
   if(dt<30) return;
   tLast = now;
 
-  dt*=0.001;
+  if(paused && !step) {
+    dt=0;
+  } else {
+    dt*=0.001;
+  }
+  step=false;
   
   background(255,255,255);
   

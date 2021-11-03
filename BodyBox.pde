@@ -32,7 +32,7 @@ class BodyBox extends Body {
     corners[2] = new PVector( width/2, height/2);
     corners[3] = new PVector(-width/2, height/2);
     for(int i=0;i<4;++i) {
-      corners[i].rotate(radians(this.angle));
+      corners[i].rotate(this.angle.z);
       corners[i].add(this.position);
     }
     return corners;

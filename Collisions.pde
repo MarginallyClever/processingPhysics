@@ -1,5 +1,50 @@
 float coefficientOfRestitution = 0.6;
 
+
+void performCollision(Body a,Body b,PVector p,PVector n) {
+  PVector Ra = a.getR(p);
+  PVector Rb = b.getR(p);
+  
+  PVector Va = a.getCombinedVelocityAtPoint(p);
+  PVector Vb = b.getCombinedVelocityAtPoint(p);
+  
+  PVector Vr = PVector.sub(Vb,Va);
+  float contactVel = PVector.dot(Vr,n);
+  if(contactVel>0) return;
+
+  float Ran = Ra.cross(n).z;
+  float Rbn = Rb.cross(n).z;
+  
+  float Jr = (-(1+coefficientOfRestitution) * contactVel);
+  float denom = a.getInverseMass() + b.getInverseMass() + sq(Ran)/a.getMomentOfInertia() + sq(Rbn)/b.getMomentOfInertia();
+  Jr /= denom;
+  
+  a.applyImpulse( PVector.mult(n,-Jr), Ra );
+  b.applyImpulse( PVector.mult(n, Jr), Rb );
+}
+
+
+// against unmovable something
+void performCollision(Body a,PVector p,PVector n) {
+  PVector Ra = a.getR(p);
+  
+  PVector Va = a.getCombinedVelocityAtPoint(p);
+  
+  PVector Vr = PVector.sub(new PVector(0,0,0),Va);
+  float contactVel = PVector.dot(Vr,n);
+  println("contactVel="+contactVel);
+  if(contactVel>0) return;
+
+  float Ran = Ra.cross(n).z;
+  
+  float Jr = -(1+coefficientOfRestitution) * contactVel;
+  float denom = a.getInverseMass() + sq(Ran)/a.getMomentOfInertia();
+  Jr /= denom;
+  
+  a.applyImpulse( PVector.mult(n,-Jr), Ra );
+}
+
+
 void testForCollisions() {
   for(int i=0;i<bodies.size();++i) {
     Body b1 = bodies.get(i);
@@ -11,7 +56,6 @@ void testForCollisions() {
     }
   }
 }
-
 
 void testCollision(Body b1,Body b2) {
   if(b1 instanceof BodyCircle) {
@@ -30,7 +74,6 @@ void testCollision(Body b1,Body b2) {
 }
 
 void testForCollisionsBoxBox(BodyBox a,BodyBox b) {
-  
 }
 
 void testForCollisionsCircleBox(BodyCircle a,BodyBox b) {
@@ -39,13 +82,16 @@ void testForCollisionsCircleBox(BodyCircle a,BodyBox b) {
   float boxRadiusSq = sq(b.width)+sq(b.height);
   if(distanceSq > boxRadiusSq + sq(a.radius)) return;
   
-  println("Hit 1");
   PVector [] corners = b.getCorners();
   for(int i=0;i<4;++i) {
     int j = (i+1)%4;
-    PVector p = lineSegmentCircleIntersection(a,corners[i],corners[j]);
-    if(p!=null) {
-      println("Hit 2");
+    ArrayList<PVector> list = lineSegmentCircleIntersection(a.position,a.radius,corners[i],corners[j]);
+    if(list.size()>0) {
+      PVector p = new PVector(0,0,0);
+      for( PVector n : list ) { 
+        p.add(n);
+      }
+      p.mult(1.0/list.size());
       PVector n = PVector.sub(corners[j],corners[i]);
       n.rotate(radians(-90));
       performCollision(a,b,p,n);
@@ -53,24 +99,33 @@ void testForCollisionsCircleBox(BodyCircle a,BodyBox b) {
   }
 }
 
-PVector lineSegmentCircleIntersection(BodyCircle c,PVector a,PVector b) {
-  PVector d = PVector.sub(b,a);
-  PVector f = PVector.sub(a,c.position);
-  float aa = d.dot(d);
-  float bb = 2.0*f.dot(d);
-  float cc= f.dot(f)- sq(c.radius);
-  float discriminant = bb*bb-4.0*aa*cc;
-  if(discriminant<0) return null;
-  discriminant = sqrt(discriminant);
-  float t1 = (-bb - discriminant)/(2.0*aa);
-  float t2 = (-bb + discriminant)/(2.0*aa);
-  if(t1>=0 && t1<=1) {
-    return PVector.add(a,d.mult(t1));
-  }
-  if(t2>=0 && t2<=1) {
-    return PVector.add(a,d.mult(t2));
-  }
-  return null;
+ArrayList<PVector> lineSegmentCircleIntersection(PVector position,float radius,PVector p1,PVector p2) {
+  ArrayList<PVector> list = new ArrayList<PVector>();
+  
+  PVector n = PVector.sub(p2,p1);
+  float len2= n.magSq();
+  n.normalize();
+  PVector L = PVector.sub(position,p1);
+  
+    stroke(255,192,0);
+  line(p1.x,p1.y,position.x,position.y);
+  
+  float tca = n.dot(L);
+  if(tca<0) return list;
+  
+  stroke(0,255,0);
+  line(position.x,position.y,p1.x+n.x*tca,p1.y+n.y*tca);
+  
+  //if(tca<0) return list;
+  float d2 = L.dot(L) - sq(tca);
+  float radius2 = sq(radius);
+  if(d2>radius2) return list;
+  float thc = sqrt(radius2-d2);
+  float v = tca-thc;
+  if(v>=0 && sq(v)<=len2) list.add(PVector.add(p1,PVector.mult(n,v)));
+  v = tca+thc;
+  if(v>=0 && sq(v)<=len2) list.add(PVector.add(p1,PVector.mult(n,v)));
+  return list;
 }
 
 void testForCollisionsCircleCircle(BodyCircle a,BodyCircle b) {
@@ -85,25 +140,6 @@ void testForCollisionsCircleCircle(BodyCircle a,BodyCircle b) {
   //a.acceleration.add(PVector.mult(n,bias*a.mass));
 
   performCollision(a,b,p,n);
-}
-
-void performCollision(Body a,Body b,PVector p,PVector n) {
-  PVector Vr = PVector.sub(b.velocity,a.velocity);
-  float vn = PVector.dot(Vr,n);
-  if(vn<0) return;
-  PVector R1 = PVector.sub(p,a.position);
-  PVector R2 = PVector.sub(p,b.position);
-  
-  PVector t1 = R1.cross(n).mult(1.0/a.getInertiaTensor()).cross(R1);
-  PVector t2 = R2.cross(n).mult(1.0/b.getInertiaTensor()).cross(R2);
-  
-  float Jr = (-(1+coefficientOfRestitution) * vn) / ( (1.0/a.mass) + (1.0/b.mass) + PVector.add(t1,t2).dot(n) );
-  
-  a.velocity.add(PVector.mult(n,-Jr/a.mass));
-  b.velocity.add(PVector.mult(n, Jr/b.mass));
-  
-  a.angularV -= R1.cross(n).z * Jr / a.getInertiaTensor();
-  b.angularV += R2.cross(n).z * Jr / b.getInertiaTensor();
 }
 
 void testForCollisionsWithWindowEdge(Body b) {
@@ -122,28 +158,42 @@ void testBoxWindowEdge(BodyBox b) {
 }
 
 void testBoxCornerWindowEdge(BodyBox b,PVector p) {
-  if(b.velocity.y>0) {
-     if(p.y>height) {
-       PVector n=new PVector(0,-1);
-       b.velocity.add(n.mult(n.dot(b.velocity)*-2));
-     }
-  } else if(b.velocity.y<0) {
-     if(p.y<0) {
-       PVector n=new PVector(0,1);
-       b.velocity.add(n.mult(n.dot(b.velocity)*-2));
-     }
+  PVector v = b.getCombinedVelocityAtPoint(p);
+  stroke(255,0,0);
+  circle(p.x,p.y,5);
+  stroke(255,128,0);
+  line(p.x,p.y,p.x+v.x,p.y+v.y);
+  
+  if(v.y>0) {
+    if(p.y>height) {
+      println("a");
+      //paused=true;
+      PVector n=new PVector(0,-1);
+      performCollision(b,p,n);
+    }
+  } else if(v.y<0) {
+    if(p.y<30) {
+      println("b");
+      //paused=true;
+      PVector n=new PVector(0,1);
+      performCollision(b,p,n);
+    }
   }
 
-  if(b.velocity.x>0) {
-     if(p.x>height) {
-       PVector n=new PVector(-1,0);
-       b.velocity.add(n.mult(n.dot(b.velocity)*-2));
-     }
-  } else if(b.velocity.x<0) {
-     if(p.x<0) {
-       PVector n=new PVector(1,0);
-       b.velocity.add(n.mult(n.dot(b.velocity)*-2));
-     }
+  if(v.x>0) {
+    if(p.x>width) {
+      println("c");
+      //paused=true;
+      PVector n=new PVector(-1,0);
+      performCollision(b,p,n);
+    }
+  } else if(v.x<0) {
+    if(p.x<0) {
+      println("d");
+      //paused=true;
+      PVector n=new PVector(1,0);
+      performCollision(b,p,n);
+    }
   }
 }
 
@@ -152,31 +202,27 @@ void testCircleWindowEdge(BodyCircle b) {
      if(b.position.y+b.radius>height) {
        PVector n = new PVector(0,-1);
        PVector p = new PVector(b.position.x,height);
-       PVector f = n.mult(n.dot(b.velocity)*-2);
-       b.applyForceAtPoint(p,f);
+       performCollision(b,p,n);
      }
   } else if(b.velocity.y<0) {
-     if(b.position.y-b.radius<0) {
-       PVector n=new PVector(0,1);
-       PVector p = new PVector(b.position.x,0);
-       PVector f = n.mult(n.dot(b.velocity)*-2);
-       b.applyForceAtPoint(p,f);
+     if(b.position.y-b.radius<30) {
+       PVector n = new PVector(0,1);
+       PVector p = new PVector(b.position.x,30);
+       performCollision(b,p,n);
      }
   }
 
   if(b.velocity.x>0) {
      if(b.position.x+b.radius>width) {
-       PVector n=new PVector(-1,0);
+       PVector n = new PVector(-1,0);
        PVector p = new PVector(width,b.position.y);
-       PVector f = n.mult(n.dot(b.velocity)*-2);
-       b.applyForceAtPoint(p,f);
+       performCollision(b,p,n);
      }
   } else if(b.velocity.x<0) {
      if(b.position.x-b.radius<0) {
-       PVector n=new PVector(1,0);
+       PVector n = new PVector(1,0);
        PVector p = new PVector(0,b.position.y);
-       PVector f = n.mult(n.dot(b.velocity)*-2);
-       b.applyForceAtPoint(p,f);
+       performCollision(b,p,n);
      }
   }
 }

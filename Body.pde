@@ -1,22 +1,36 @@
 abstract class Body {
   public color myColor = color(0,0);
-  public float mass=1;
+  private float mass = 1;
+  private float inverseMass = 1;
 
   public PVector position = new PVector(0,0);
   public PVector velocity = new PVector(0,0);
   public PVector acceleration = new PVector(0,0);
   
-  public float angle=random(360);
-  public float angularV=0;
-  public float torque=0;
+  public PVector angle = new PVector(0,0,0);
+  public PVector angularV = new PVector(0,0,0);
+  public PVector torque = new PVector(0,0,0);
+  
+  public void setMass(float m) {
+    this.mass=m;
+    this.inverseMass = 1.0/m;
+  }
+  
+  public float getInverseMass() {
+    return inverseMass;
+  }
+  
+  public float getMass() {
+    return mass;
+  }
   
   public void render() {
     stroke(255,0,0);
     line(position.x,position.y,
          position.x+velocity.x,position.y+velocity.y);
     
-    float c = cos(radians(angle));
-    float s = sin(radians(angle));
+    float c = cos(angle.z);
+    float s = sin(angle.z);
     stroke(0,255,0);
     line(position.x, position.y,
          position.x+c*5, position.y+s*5);
@@ -30,29 +44,26 @@ abstract class Body {
     this.velocity.add(this.acceleration.mult(dt/mass));
     this.acceleration.set(0,0,0);
     
-    this.angularV += this.torque * (1.0/getMomentOfInertia()) * dt;
-    this.torque=0;
+    this.angularV.add(PVector.mult( this.torque, (1.0/getMomentOfInertia()) * dt));
+    this.torque.set(0,0,0);
   }
   
   public void move(float dt) {
     this.position.add(PVector.mult(this.velocity,dt));
-    this.angle += this.angularV*dt;
+    this.angle.add(PVector.mult(this.angularV,dt));
   }
   
   abstract public String toString();
   abstract float getMomentOfInertia();
     
-  void applyForceAtPoint(PVector p,PVector f) {
-    PVector n = f.normalize();
-    PVector r = getR(p);
-    float newTorque = r.cross(n).z;
-    this.torque += newTorque;
+  void applyImpulse(PVector impulse,PVector contactVector) {
+    this.velocity.add(PVector.mult(impulse,1.0/mass));
+    this.angularV.add( contactVector.cross(impulse) );
   }
   
   PVector getCombinedVelocityAtPoint(PVector p) {
     PVector r = getR(p);
-    PVector f = r.cross(new PVector(0,0,angularV));
-    return PVector.add(f,velocity);
+    return PVector.add(velocity,angularV.cross(r));
   }
   
   PVector getR(PVector p) {
