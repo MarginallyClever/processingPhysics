@@ -38,7 +38,7 @@ class BodyBox extends Body {
     return corners;
   }
   
-  float getInertiaTensor() {
+  float getMomentOfInertia() {
     return this.mass * (sq(width)+sq(height)) / 12.0;
   }
 }

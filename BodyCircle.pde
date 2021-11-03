@@ -18,7 +18,7 @@ class BodyCircle extends Body {
           +this.myColor;
   }
   
-  float getInertiaTensor() {
+  float getMomentOfInertia() {
     return this.mass * sq(this.radius) / 2.0;
   }
 }
