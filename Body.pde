@@ -14,9 +14,12 @@ abstract class Body {
     stroke(255,0,0);
     line(position.x,position.y,
          position.x+velocity.x,position.y+velocity.y);
+    
+    float c = cos(radians(angle));
+    float s = sin(radians(angle));
     stroke(0,255,0);
-    line(position.x,position.y,
-         position.x+cos(angle)*5,position.y+sin(angle)*5);
+    line(position.x, position.y,
+         position.x+c*5, position.y+s*5);
   }
   
   public void addGravity() {
@@ -24,10 +27,10 @@ abstract class Body {
   }
   
   public void accelerate(float dt) {
-    this.velocity.add(this.acceleration.mult(dt));
+    this.velocity.add(this.acceleration.mult(dt/mass));
     this.acceleration.set(0,0,0);
     
-    this.angularV+=this.torque*dt;
+    this.angularV += this.torque * (1.0/getMomentOfInertia()) * dt;
     this.torque=0;
   }
   
@@ -37,12 +40,22 @@ abstract class Body {
   }
   
   abstract public String toString();
-  abstract float getInertiaTensor();
-  
+  abstract float getMomentOfInertia();
+    
   void applyForceAtPoint(PVector p,PVector f) {
     PVector n = f.normalize();
-    PVector r = PVector.sub(p,this.position);
+    PVector r = getR(p);
     float newTorque = r.cross(n).z;
-    this.torque += newTorque / this.getInertiaTensor();
+    this.torque += newTorque;
+  }
+  
+  PVector getCombinedVelocityAtPoint(PVector p) {
+    PVector r = getR(p);
+    PVector f = r.cross(new PVector(0,0,angularV));
+    return PVector.add(f,velocity);
+  }
+  
+  PVector getR(PVector p) {
+    return PVector.sub(p,this.position);
   }
 }
