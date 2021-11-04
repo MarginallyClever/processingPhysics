@@ -48,12 +48,15 @@ void performCollision(Body a,PVector p,PVector n) {
 void testForCollisions() {
   for(int i=0;i<bodies.size();++i) {
     Body b1 = bodies.get(i);
-    testForCollisionsWithWindowEdge(b1);
+    testCollision(b1,worldEdge);
     
     for(int j=i+1;j<bodies.size();++j) {
       Body b2 = bodies.get(j);
       testCollision(b1,b2);
     }
+    
+    worldEdge.velocity.set(0,0,0);
+    worldEdge.angularV.set(0,0,0);
   }
 }
 
@@ -79,7 +82,7 @@ void testForCollisionsBoxBox(BodyBox a,BodyBox b) {
 void testForCollisionsCircleBox(BodyCircle a,BodyBox b) {
   PVector dp = PVector.sub(a.position,b.position);
   float distanceSq = dp.magSq();
-  float boxRadiusSq = sq(b.width)+sq(b.height);
+  float boxRadiusSq = sq(b.w)+sq(b.h);
   if(distanceSq > boxRadiusSq + sq(a.radius)) return;
   
   PVector [] corners = b.getCorners();

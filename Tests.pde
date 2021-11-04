@@ -20,8 +20,8 @@ void testOneBoxAndWall() {
   addBox();
   BodyBox a = (BodyBox)bodies.get(bodies.size()-1);
   a.setMass(15);
-  a.width=30*4;
-  a.height=20*4;
+  a.w=30*4;
+  a.h=20*4;
   
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
@@ -62,9 +62,9 @@ void testOneBoxAndOneCircle() {
   addBox();
   Body b = bodies.get(bodies.size()-1); 
   ((BodyBox)b).setMass(50);
-  ((BodyBox)b).width=5*20;
-  ((BodyBox)b).height=10*20;
-  
+  ((BodyBox)b).w=5*20;
+  ((BodyBox)b).h=10*20;
+
   a.position.set(width/2-90,height/2-35);
   b.position.set(width/2+50,height/2);
   a.velocity.set(15,0);
@@ -91,20 +91,20 @@ void addCircle() {
   BodyCircle b = new BodyCircle();
   b.setMass(random(1,20));
   b.radius=b.getMass()/2;
-  b.position.set(random(800-b.radius*2)+b.radius,
-                 random(800-b.radius*2)+b.radius);
+  b.position.set(random(worldEdge.w-b.radius*2)+b.radius,
+                 random(worldEdge.h-b.radius*2)+b.radius);
   bodies.add(b);
 }
 
 void addBox() {
   BodyBox b = new BodyBox();
   b.setMass(random(1,20));
-  b.width = random(1,5);
-  b.height = b.getMass()/b.width;
-  b.width*=8;
-  b.height*=8;
-  float larger = max(b.width,b.height);
-  b.position.set(random(800-larger*2)+larger,
-                 random(800-larger*2)+larger);
+  b.w = random(1,5);
+  b.h = b.getMass()/b.w;
+  b.w*=8;
+  b.h*=8;
+  float larger = max(b.w,b.h);
+  b.position.set(random(worldEdge.w-larger*2)+larger,
+                 random(worldEdge.h-larger*2)+larger);
   bodies.add(b);
 }

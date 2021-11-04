@@ -2,6 +2,8 @@ abstract class Body {
   public color myColor = color(0,0);
   private float mass = 1;
   private float inverseMass = 1;
+  private float momentOfInertia = 1;
+  private float inverseMomentOfInertia = 1;
 
   public PVector position = new PVector(0,0);
   public PVector velocity = new PVector(0,0);
@@ -13,17 +15,37 @@ abstract class Body {
   
   public void setMass(float m) {
     this.mass=m;
-    this.inverseMass = 1.0/m;
+    if(m==0) this.inverseMass=0;
+    else this.inverseMass = 1.0/m;
   }
   
   public float getInverseMass() {
-    return inverseMass;
+    return this.inverseMass;
   }
   
   public float getMass() {
-    return mass;
+    return this.mass;
   }
   
+  public float getMomentOfInertia() {
+    return this.momentOfInertia;
+  }
+  
+  public float getInverseMomentOfInertia() {
+    return this.inverseMomentOfInertia;
+  }
+  
+  public void setMomentOfInertia(float moi) {
+    this.momentOfInertia=moi;
+    if(moi==0) this.inverseMomentOfInertia=0;
+    else this.inverseMomentOfInertia=1.0/moi;
+  }
+  
+  public void setStatic() {
+    setMass(0);
+    setMomentOfInertia(0);
+  }
+
   public void render() {
     stroke(255,0,0);
     line(position.x,position.y,
@@ -54,7 +76,6 @@ abstract class Body {
   }
   
   abstract public String toString();
-  abstract float getMomentOfInertia();
     
   void applyImpulse(PVector impulse,PVector contactVector) {
     this.velocity.add(PVector.mult(impulse,1.0/mass));

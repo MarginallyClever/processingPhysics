@@ -1,4 +1,5 @@
 ArrayList<Body> bodies = new ArrayList<Body>();
+BodyBox worldEdge;
 long tLast;
 boolean paused=false;
 boolean step=false;
@@ -16,6 +17,17 @@ void reset() {
   bodies.clear();
   paused=false;
   step=false;
+  worldEdge=createWorldEdge();
+}
+
+BodyBox createWorldEdge() {
+  BodyBox b = new BodyBox();
+  b.position.set(width/2,height/2);
+  b.w=width*0.9;
+  b.h=height*0.9;
+  b.setMass(0);
+  b.setStatic();
+  return b;
 }
 
 void keyReleased() {
@@ -26,6 +38,8 @@ void keyReleased() {
     case '3':  testTwoCircles();  break;
     case '4':  testOneBallAndWall();  break;
     case '5':  testOneBoxAndWall();  break;
+    case 'p':
+    case 'P':  paused=!paused;  break;
     case ' ':  step=true;  break;
     default: break;
   }
@@ -36,7 +50,7 @@ void draw() {
   float dt = now-tLast;
   if(dt<30) return;
   tLast = now;
-
+  
   if(paused && !step) {
     dt=0;
   } else {
@@ -51,11 +65,12 @@ void draw() {
     //b.addGravity();
     b.accelerate(dt);
   }
-
+  
   testForCollisions();
-    
+  
   for( Body b : bodies ) {
     b.move(dt);
     b.render();
   }
+  worldEdge.render();
 }

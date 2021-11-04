@@ -10,7 +10,7 @@ class BodyCircle extends Body {
   
   public String toString() {
     return BodyCircle.class.getSimpleName()+"\t"
-          +this.mass+"\t"
+          +this.getMass()+"\t"
           +this.acceleration+"\t"
           +this.velocity+"\t"
           +this.position+"\t"
@@ -18,7 +18,7 @@ class BodyCircle extends Body {
           +this.myColor;
   }
   
-  float getMomentOfInertia() {
-    return this.mass * sq(this.radius) / 2.0;
+  void updateShape() {
+    setMomentOfInertia(this.getMass() * sq(this.radius) / 2.0);
   }
 }

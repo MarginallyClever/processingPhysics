@@ -1,6 +1,6 @@
 class BodyBox extends Body {
-  public float width=1;
-  public float height=1;
+  public float w=1;
+  public float h=1;
   
   public void render() {
     stroke(myColor);
@@ -16,21 +16,21 @@ class BodyBox extends Body {
   
   public String toString() {
     return BodyBox.class.getSimpleName()+"\t"
-          +this.mass+"\t"
+          +this.getMass()+"\t"
           +this.acceleration+"\t"
           +this.velocity+"\t"
           +this.position+"\t"
-          +this.width+"\t"
-          +this.height+"\t"
+          +this.w+"\t"
+          +this.h+"\t"
           +this.myColor;
   }
   
   PVector [] getCorners() {
     PVector[] corners = new PVector[4];
-    corners[0] = new PVector(-width/2,-height/2);
-    corners[1] = new PVector( width/2,-height/2);
-    corners[2] = new PVector( width/2, height/2);
-    corners[3] = new PVector(-width/2, height/2);
+    corners[0] = new PVector(-this.w/2,-this.h/2);
+    corners[1] = new PVector( this.w/2,-this.h/2);
+    corners[2] = new PVector( this.w/2, this.h/2);
+    corners[3] = new PVector(-this.w/2, this.h/2);
     for(int i=0;i<4;++i) {
       corners[i].rotate(this.angle.z);
       corners[i].add(this.position);
@@ -38,7 +38,7 @@ class BodyBox extends Body {
     return corners;
   }
   
-  float getMomentOfInertia() {
-    return this.mass * (sq(width)+sq(height)) / 12.0;
+  void updateShape() {
+    setMomentOfInertia(this.getMass() * (sq(this.w)+sq(this.h)) / 12.0);
   }
 }
