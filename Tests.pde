@@ -54,16 +54,14 @@ void testOneBoxAndOneCircle() {
   println("testOneBoxAndOneCircle()");
   reset();
   
-  BodyCircle a = addCircle(50,1);
-  
-  addBox(5*20,10*20,20);
-  BodyBox b = (BodyBox)bodies.get(bodies.size()-1);
+  BodyCircle a = addCircle(50,10);
+  BodyBox b = addBox(5*20,10*20,20);
   b.updateRadius();
   b.myColor = color(128,0,0);
 
   a.position.set(width/2-90,height/2-60);
   b.position.set(width/2+50,height/2);
-  a.velocity.set(15,0);
+  a.velocity.set(35,0);
   b.velocity.set(0,0);
 }
 

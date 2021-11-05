@@ -30,6 +30,7 @@ void testCollision(Manifold m) {
   } else if(b1 instanceof BodyBox) {
     if(b2 instanceof BodyCircle) {
       testForCollisionsCircleBox(m,(BodyCircle)b2,(BodyBox)b1);
+      m.normal.mult(-1);
     } else if(b2 instanceof BodyBox) {
       testForCollisionsBoxBox(m,(BodyBox)b1,(BodyBox)b2);
     }

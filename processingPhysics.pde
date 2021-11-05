@@ -5,9 +5,11 @@ boolean paused=false;
 boolean step=false;
 PVector gravity = new PVector(0,9.8);
 
+PVector camera = new PVector(0,0,1);
 
 void setup() {
   size(800,800);
+  camera.set(width/2,height/2,1);
   noFill();
   createWorldEdges();  
   tLast = millis();
@@ -55,6 +57,19 @@ void keyReleased() {
   }
 }
 
+void mouseDragged() {
+  float dx = mouseX-pmouseX;
+  float dy = mouseY-pmouseY;
+  camera.x-=dx;
+  camera.y-=dy;
+}
+
+void mouseWheel(MouseEvent event) {
+  float e = event.getCount();
+  println("mouse="+e);
+  camera.z+=e/10;
+}
+
 void draw() {
   long now = millis();
   float dt = now-tLast;
@@ -72,9 +87,8 @@ void draw() {
   
   background(255,255,255);
   pushMatrix();
-  float s=1;
-  scale(s);
-  translate(width*(1-s)/2,height*(1-s)/2);
+  translate(width/2-camera.x,height/2-camera.y);
+  scale(camera.z);
   
   contacts.clear();
   

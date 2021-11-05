@@ -8,8 +8,8 @@ class BodyBox extends Body {
   }
   
   public BodyBox(PVector a,PVector b) {
-    w=b.x-a.x;
-    h=b.y-a.y;
+    w=abs(b.x-a.x);
+    h=abs(b.y-a.y);
     position.set(
       (a.x+b.x)/2,
       (a.y+b.y)/2);
@@ -53,7 +53,7 @@ class BodyBox extends Body {
   }
   
   public String toString() {
-    return BodyBox.class.getSimpleName()+"{"
+    return "["
           +this.position+", "
           +this.velocity+", "
           +this.force+", "
@@ -65,7 +65,7 @@ class BodyBox extends Body {
           +this.w+", "
           +this.h+", "
           +this.r+", "
-          +"}";
+          +"]";
   }
   
   PVector [] getCorners() {

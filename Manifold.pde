@@ -1,4 +1,6 @@
-float coefficientOfRestitution = 0.25;
+import java.util.*;
+
+float coefficientOfRestitution = 0.85;
 
 class Manifold {
   Body a, b;
@@ -11,31 +13,37 @@ class Manifold {
     this.b=b;
   }
   
+  public String toString() {
+    return "["
+      +a+", "
+      +b+", "
+      +normal+", "
+      +penetration+", "
+      +contacts+", "
+      +"]";
+  }
+  
   void resolveCollisions() {
     float numContacts = contacts.size();
     if(numContacts==0) return;
     
-    if( a.getInverseMass() + b.getInverseMass() == 0 ) {
+    if(a.getInverseMass()==0 && b.getInverseMass()==0) {
       a.velocity.set(0,0,0);
       b.velocity.set(0,0,0);
       return;
     }
         
-    println("A: "+a);
-    println("B: "+b+"\n");
+    println("M: "+toString());
     
     for( PVector p : contacts ) {      
-      PVector Ra = a.getR(p);// (p-a.position)
-      PVector Rb = b.getR(p);// (p-b.position)
-      
-      //Va = a.velocity + a.angularV x Ra
       PVector Va = a.getCombinedVelocityAtPoint(p);
-      //Vb = b.velocity + b.angularV x Rb
       PVector Vb = b.getCombinedVelocityAtPoint(p);
-      
       PVector Vr = PVector.sub(Vb,Va);
       float contactVel = PVector.dot(Vr,normal);
       
+      println("Vr="+Vr);
+      println("contactVel="+contactVel);
+
       stroke(  0,  0,255);  circle(p.x,p.y,5);
       //stroke(  0,  0,255);  line(p.x,p.y, p.x+normal.x*10,         p.y+normal.y*10);
       stroke(128,128,255);  line(p.x,p.y, p.x+normal.x*contactVel, p.y+normal.y*contactVel);
@@ -44,6 +52,8 @@ class Manifold {
       
       if(contactVel>0) continue;
     
+      PVector Ra = a.getR(p);
+      PVector Rb = b.getR(p);
       float Ran = Ra.cross(normal).z;
       float Rbn = Rb.cross(normal).z;
       float inverseMassSum = a.getInverseMass() 
@@ -54,6 +64,9 @@ class Manifold {
       float Jr = -(1.0f +coefficientOfRestitution) * contactVel;
       Jr /= inverseMassSum;
       Jr /= numContacts;
+
+      println("inverseMassSum="+inverseMassSum);
+      println("Jr="+Jr);
       
       a.applyImpulse( PVector.mult(normal,-Jr), Ra );
       b.applyImpulse( PVector.mult(normal, Jr), Rb );

@@ -19,7 +19,7 @@ class BodyCircle extends Body {
   }
   
   public String toString() {
-    return BodyCircle.class.getSimpleName()+"{"
+    return "["
           +this.position+", "
           +this.velocity+", "
           +this.force+", "
@@ -29,7 +29,7 @@ class BodyCircle extends Body {
           +this.getInverseMomentOfInertia()+", "
           +colorToString(this.myColor)+", "
           +this.radius+", "
-          +"}";
+          +"]";
   }
   
   void updateShape() {
