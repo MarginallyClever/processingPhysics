@@ -1,6 +1,16 @@
 class BodyCircle extends Body {
   public float radius=1;
   
+  public BodyCircle() {
+    super();
+  }
+  
+  public BodyCircle(float r,float m) {
+    this.radius=r;
+    this.setMass(m);
+    updateShape();
+  }
+  
   public void render() {
     stroke(myColor);
     circle(position.x,position.y,radius*2);
@@ -9,16 +19,20 @@ class BodyCircle extends Body {
   }
   
   public String toString() {
-    return BodyCircle.class.getSimpleName()+"\t"
-          +this.getMass()+"\t"
-          +this.acceleration+"\t"
-          +this.velocity+"\t"
-          +this.position+"\t"
-          +this.radius+"\t"
-          +this.myColor;
+    return BodyCircle.class.getSimpleName()+"{"
+          +this.position+", "
+          +this.velocity+", "
+          +this.force+", "
+          +this.getMass()+"/"
+          +this.getInverseMass()+", "
+          +this.getMomentOfInertia()+"/"
+          +this.getInverseMomentOfInertia()+", "
+          +colorToString(this.myColor)+", "
+          +this.radius+", "
+          +"}";
   }
   
   void updateShape() {
-    setMomentOfInertia(this.getMass() * sq(this.radius) / 2.0);
+    setMomentOfInertia(PI * this.getMass() * pow(this.radius,4) / 4);
   }
 }

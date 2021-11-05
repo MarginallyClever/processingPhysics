@@ -3,11 +3,7 @@ void testOneBallAndWall() {
   println("testOneBallAndWall()");
   reset();
   
-  addCircle();
-  BodyCircle a = (BodyCircle)bodies.get(bodies.size()-1);
-  a.setMass(5);
-  a.radius=40;
-  
+  BodyCircle a = addCircle(40,5);  
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
   a.angularV.set(0,0,radians(10));
@@ -17,31 +13,34 @@ void testOneBoxAndWall() {
   println("testOneBallAndWall()");
   reset();
   
-  addBox();
-  BodyBox a = (BodyBox)bodies.get(bodies.size()-1);
-  a.setMass(15);
-  a.w=30*4;
-  a.h=20*4;
-  
+  BodyBox a = addBox(30*4,20*4,15);
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
   a.angularV.set(0,0,radians(10));
 }
 
+void testTwoBoxes() {
+  println("testTwoBoxes()");
+  reset();
+  bodies.clear();
+  
+  BodyBox a = addBox(30*4,20*4,5);
+  BodyBox b = addBox(30*4,40*4,10);
+  
+  a.position.set(width/2-100,height/2-15);
+  b.position.set(width/2+100,height/2);
+  a.velocity.set(15,0);
+  b.velocity.set(0,0);
+  a.angularV.set(0,0,radians(10));
+  a.angularV.set(0,0,radians(-40));
+}
 
 void testTwoCircles() {
   println("testTwoCircles()");
   reset();
   
-  addCircle();
-  Body a = bodies.get(bodies.size()-1);
-  ((BodyCircle)a).setMass(5);
-  ((BodyCircle)a).radius=15;
-  
-  addCircle();
-  Body b = bodies.get(bodies.size()-1);
-  ((BodyCircle)b).setMass(10);
-  ((BodyCircle)b).radius=30;
+  BodyCircle a = addCircle(15,5);
+  BodyCircle b = addCircle(30,10);
   
   a.position.set(width/2-50,height/2-15);
   b.position.set(width/2+50,height/2);
@@ -54,18 +53,15 @@ void testTwoCircles() {
 void testOneBoxAndOneCircle() {
   println("testOneBoxAndOneCircle()");
   reset();
-  addCircle();
-  Body a = bodies.get(bodies.size()-1);
-  ((BodyCircle)a).setMass(50);
-  ((BodyCircle)a).radius=50;
   
-  addBox();
-  Body b = bodies.get(bodies.size()-1); 
-  ((BodyBox)b).setMass(50);
-  ((BodyBox)b).w=5*20;
-  ((BodyBox)b).h=10*20;
+  BodyCircle a = addCircle(50,1);
+  
+  addBox(5*20,10*20,20);
+  BodyBox b = (BodyBox)bodies.get(bodies.size()-1);
+  b.updateRadius();
+  b.myColor = color(128,0,0);
 
-  a.position.set(width/2-90,height/2-35);
+  a.position.set(width/2-90,height/2-60);
   b.position.set(width/2+50,height/2);
   a.velocity.set(15,0);
   b.velocity.set(0,0);
@@ -77,9 +73,14 @@ void testRandomShapes() {
   reset();
   for(int i=0;i<20;++i) {
     if(i%2==0) {
-      addCircle();
+      BodyCircle b = addCircle(random(5,30),random(1,6));
+      b.position.set(random(width-b.radius*2)+b.radius,
+                     random(height-b.radius*2)+b.radius);
     } else {
-      addBox();
+      BodyBox b = addBox(random(10,50),random(20,40),random(2,8));
+      float larger = max(b.w,b.h);
+      b.position.set(random(width-larger*2)+larger,
+                     random(height-larger*2)+larger);
     }
     Body b = bodies.get(bodies.size()-1); 
     b.velocity.set(random(50)-25,random(50)-25);
@@ -87,24 +88,14 @@ void testRandomShapes() {
   }
 }
 
-void addCircle() {
-  BodyCircle b = new BodyCircle();
-  b.setMass(random(1,20));
-  b.radius=b.getMass()/2;
-  b.position.set(random(worldEdge.w-b.radius*2)+b.radius,
-                 random(worldEdge.h-b.radius*2)+b.radius);
+BodyCircle addCircle(float r,float m) {
+  BodyCircle b = new BodyCircle(r,m);
   bodies.add(b);
+  return b;
 }
 
-void addBox() {
-  BodyBox b = new BodyBox();
-  b.setMass(random(1,20));
-  b.w = random(1,5);
-  b.h = b.getMass()/b.w;
-  b.w*=8;
-  b.h*=8;
-  float larger = max(b.w,b.h);
-  b.position.set(random(worldEdge.w-larger*2)+larger,
-                 random(worldEdge.h-larger*2)+larger);
+BodyBox addBox(float w,float h,float m) {
+  BodyBox b = new BodyBox(w,h,m);
   bodies.add(b);
+  return b;
 }
