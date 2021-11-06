@@ -1,7 +1,7 @@
 # processingPhysics
  Physics in Processing
 
-https://www.youtube.com/watch?v=SJy6yZOul2w
+[![Click to watch](2021-11-05-02.PNG)](https://www.youtube.com/watch?v=SJy6yZOul2w)
 
 Press keys 1-6 for different demos.
 Press 'f' to pause/unpause.
