@@ -8,3 +8,5 @@ Press 'f' to pause/unpause.
 Press spacebar while paused to step once.
 
 Much inspiration taken from https://github.com/RandyGaul/ImpulseEngine .
+
+Read more here: https://www.marginallyclever.com/2021/11/friday-facts-7-a-2d-physics-engine-in-processing-java-and-the-sunk-cost-fallacy/
