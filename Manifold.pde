@@ -35,7 +35,7 @@ class Manifold {
       return;
     }
         
-    println("M: "+toString());
+    //println("M: "+toString());
     
     for( PVector p : contacts ) {      
       PVector Va = a.getCombinedVelocityAtPoint(p);
@@ -43,9 +43,9 @@ class Manifold {
       PVector Vr = PVector.sub(Vb,Va);
       float contactVel = PVector.dot(Vr,normal);
       
-      println("Vr="+Vr);
-      println("contactVel="+contactVel);
-      println("normal="+normal);
+      //println("Vr="+Vr);
+      //println("contactVel="+contactVel);
+      //println("normal="+normal);
 
       stroke(  0,  0,255);  circle(p.x,p.y,5);
       //stroke(  0,  0,255);  line(p.x,p.y, p.x+normal.x*10,         p.y+normal.y*10);
@@ -67,8 +67,8 @@ class Manifold {
       float Jr = -(1.0f +coefficientOfRestitution) * contactVel;
       Jr /= inverseMassSum;
       Jr /= numContacts;
-      println("inverseMassSum="+inverseMassSum);
-      println("Jr="+Jr);
+      //println("inverseMassSum="+inverseMassSum);
+      //println("Jr="+Jr);
       
       a.applyImpulse( PVector.mult(normal,-Jr), Ra );
       b.applyImpulse( PVector.mult(normal, Jr), Rb );
@@ -108,5 +108,22 @@ class Manifold {
     PVector correction = PVector.mult(this.normal, (numerator / denominator) * percent);
     //a.position.sub( PVector.mult(correction, a.getInverseMass()) );
     //b.position.add( PVector.mult(correction, b.getInverseMass()) );
+  }
+
+  void testCollision() {
+    if(a instanceof BodyCircle) {
+      if(b instanceof BodyCircle) {
+        testCollisionCircleCircle(m,(BodyCircle)a,(BodyCircle)b);
+      } else if(b instanceof BodyPolygon) {
+        testCollisionCirclePolygon(m,(BodyCircle)a,(BodyPolygon)b);
+      }
+    } else if(a instanceof BodyPolygon) {
+      if(b instanceof BodyCircle) {
+        testCollisionCirclePolygon(m,(BodyCircle)b,(BodyPolygon)a);
+        m.normal.mult(-1);
+      } else if(b instanceof BodyPolygon) {
+        testCollisionPolygonPolygon(m,(BodyPolygon)a,(BodyPolygon)b);
+      }
+    }
   }
 }

@@ -15,7 +15,7 @@ void testOneBoxAndWall() {
   reset();
   
   gravity.set(0,0);
-  BodyBox a = addBox(30*4,20*4,15);
+  BodyPolygon a = addBox(30*4,20*4,15);
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
   a.angularV.set(0,0,radians(10));
@@ -24,10 +24,11 @@ void testOneBoxAndWall() {
 void testTwoBoxes() {
   println("testTwoBoxes()");
   reset();
+  bodies.clear();
   gravity.set(0,0);
   
-  BodyBox a = addBox(30*4,20*4,5);
-  BodyBox b = addBox(30*4,40*4,10);
+  BodyPolygon a = addBox(30*4,20*4,5);
+  BodyPolygon b = addBox(30*4,40*4,10);
   
   a.position.set(width/2-100,height/2-15);
   b.position.set(width/2+100,height/2);
@@ -59,7 +60,7 @@ void testOneBoxAndOneCircle() {
   gravity.set(0,0);
   
   BodyCircle a = addCircle(50,10);
-  BodyBox b = addBox(5*20,10*20,20);
+  BodyPolygon b = addBox(5*20,10*20,20);
   b.updateRadius();
   b.myColor = color(128,0,0);
 
@@ -75,7 +76,7 @@ void testOneBoxAndOneCircleCornerHit() {
   gravity.set(0,0);
   
   BodyCircle a = addCircle(50,10);
-  BodyBox b = addBox(5*20,5*20,20);
+  BodyPolygon b = addBox(5*20,5*20,20);
   b.updateRadius();
   b.myColor = color(128,0,0);
 
@@ -92,19 +93,23 @@ void testRandomShapes() {
   reset();
   gravity.set(0,0);
   for(int i=0;i<20;++i) {
-    if(i%2==0) {
+    int dice = (int)random(1,20);
+    if(i<8) {
       BodyCircle b = addCircle(random(5,30),random(1,6));
       b.position.set(random(width-b.radius*2)+b.radius,
                      random(height-b.radius*2)+b.radius);
+    } else if(i<16) {
+      BodyPolygon b = addBox(random(10,50),random(20,40),random(2,8));
+      b.position.set(random(width-b.radius*2)+b.radius,
+                     random(height-b.radius*2)+b.radius);
     } else {
-      BodyBox b = addBox(random(10,50),random(20,40),random(2,8));
-      float larger = max(b.w,b.h);
-      b.position.set(random(width-larger*2)+larger,
-                     random(height-larger*2)+larger);
+      BodyPolygon b = addMeteor(random(10,20),random(20,40),random(2,8));
+      b.position.set(random(width-b.radius*2)+b.radius,
+                     random(height-b.radius*2)+b.radius);
     }
     Body b = bodies.get(bodies.size()-1); 
     b.velocity.set(random(50)-25,random(50)-25);
-    b.angularV.z=random(10)-5;
+    b.angularV.z=random(-5,5);
   }
 }
 
@@ -119,8 +124,43 @@ BodyCircle addCircle(float r,float m) {
   return b;
 }
 
-BodyBox addBox(float w,float h,float m) {
-  BodyBox b = new BodyBox(w,h,m);
+BodyPolygon addBox(float w,float h,float m) {
+  println("addBox()");
+  BodyPolygon b = new BodyPolygon();
   bodies.add(b);
+  
+  b.points.add(new PVector(-w/2,-h/2));
+  b.points.add(new PVector( w/2,-h/2));
+  b.points.add(new PVector( w/2, h/2));
+  b.points.add(new PVector(-w/2, h/2));
+  b.updateRadius();
+  b.updateShape();
+  b.setMass(m);
+    
+  return b;
+}
+
+BodyPolygon addBox(PVector a,PVector b) {
+  println("addBox()");
+  BodyPolygon box = addBox(b.x-a.x,b.y-a.y,1);
+  box.position.set((a.x+b.x)/2,
+                   (a.y+b.y)/2);
+  return box;
+}
+
+BodyPolygon addMeteor(float rMin,float rMax,float m) {
+  println("addMeteor()");
+  BodyPolygon b = new BodyPolygon();
+  bodies.add(b);
+  int count = (int)random(4,20);
+  for(int i=0;i<count;++i) {
+    float rad = PI*2*(float)i/(float)count;
+    float d = random(rMin,rMax);
+    b.points.add(new PVector(cos(rad)*d,sin(rad)*d));
+  }
+  b.updateRadius();
+  b.updateShape();
+  b.setMass(m);
+
   return b;
 }

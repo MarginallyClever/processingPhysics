@@ -1,5 +1,5 @@
 
-void testForCollisions() {
+void testAllCollisions() {
   int size=bodies.size();
   for(int i=0;i<size;++i) {
     Body b1 = bodies.get(i);
@@ -17,43 +17,24 @@ void testForCollisions() {
   }
 }
 
-void testCollision(Manifold m) {
-  Body b1=m.a;
-  Body b2=m.b;
-  
-  if(b1 instanceof BodyCircle) {
-    if(b2 instanceof BodyCircle) {
-      testForCollisionsCircleCircle(m,(BodyCircle)b1,(BodyCircle)b2);
-    } else if(b2 instanceof BodyBox) {
-      testForCollisionsCircleBox(m,(BodyCircle)b1,(BodyBox)b2);
-    }
-  } else if(b1 instanceof BodyBox) {
-    if(b2 instanceof BodyCircle) {
-      testForCollisionsCircleBox(m,(BodyCircle)b2,(BodyBox)b1);
-      m.normal.mult(-1);
-    } else if(b2 instanceof BodyBox) {
-      testForCollisionsBoxBox(m,(BodyBox)b1,(BodyBox)b2);
-    }
-  }
-}
-
-void testForCollisionsBoxBox(Manifold m,BodyBox a,BodyBox b) {
-  PVector [] aCorners = a.getCorners();
-  PVector [] bCorners = b.getCorners();
-  
+void testCollisionPolygonPolygon(Manifold m,BodyPolygon a,BodyPolygon b) {
   float d2 = PVector.sub(a.position,b.position).magSq();
-  float ar2=sq(a.w)+sq(a.h);
-  float br2=sq(b.w)+sq(b.h);
-  if(d2>ar2+br2) return;
+  if(d2 > sq(a.radius+b.radius) ) return;
+  
+  PVector [] aCorners = a.getPoints();
+  PVector [] bCorners = b.getPoints();
+  
+  int aSize = aCorners.length;
+  int bSize = bCorners.length;
   
   //println(a.position+"\tvs\t"+b.position);
-  for(int a1=0;a1<4;++a1) {
-    int a2=(a1+1)%4;
+  for(int a1=0;a1<aSize;++a1) {
+    int a2=(a1+1)%aSize;
     PVector p1 = aCorners[a1];
     PVector p2 = aCorners[a2];
     
-    for(int b1=0;b1<4;++b1) {
-      int b2=(b1+1)%4;
+    for(int b1=0;b1<bSize;++b1) {
+      int b2=(b1+1)%bSize;
       PVector p3 = bCorners[b1];
       PVector p4 = bCorners[b2];
       
@@ -68,17 +49,17 @@ void testForCollisionsBoxBox(Manifold m,BodyBox a,BodyBox b) {
   }
 }
 
-void testForCollisionsCircleBox(Manifold m,BodyCircle a,BodyBox b) {
-  PVector dp = PVector.sub(b.position,a.position);
-  float distanceSq = dp.magSq();
-  if(distanceSq > sq(b.r) + sq(a.radius)) return;
+void testCollisionCirclePolygon(Manifold m,BodyCircle a,BodyPolygon b) {
+  float distanceSq = PVector.sub(b.position,a.position).magSq();
+  if(distanceSq > sq(b.radius+a.radius)) return;
 
   float separation = -Float.MAX_VALUE;
   int bestFace = 0;
   
-  PVector [] corners = b.getCorners();
-  for(int i=0;i<4;++i) {
-    int j = (i+1)%4;
+  PVector [] corners = b.getPoints();
+  int bSize = corners.length;
+  for(int i=0;i<bSize;++i) {
+    int j = (i+1)%bSize;
     PVector n = getNormalTo(corners[i],corners[j]);
     float s = n.dot(PVector.sub(a.position,corners[i]));
     if(s>a.radius) return;
@@ -89,7 +70,7 @@ void testForCollisionsCircleBox(Manifold m,BodyCircle a,BodyBox b) {
   }
   
   PVector Pa = corners[bestFace];
-  PVector Pb = corners[(bestFace+1)%4];
+  PVector Pb = corners[(bestFace+1)%bSize];
   if(separation<1e-6) {
     m.normal = getNormalTo(Pa,Pb);
     PVector p = PVector.add(a.position,PVector.mult(m.normal,a.radius));
@@ -119,7 +100,7 @@ void testForCollisionsCircleBox(Manifold m,BodyCircle a,BodyBox b) {
   }
 }
 
-void testForCollisionsCircleCircle(Manifold m,BodyCircle a,BodyCircle b) {
+void testCollisionCircleCircle(Manifold m,BodyCircle a,BodyCircle b) {
   PVector dp = PVector.sub(b.position,a.position);
   float distance2 = dp.magSq();
   float r = a.radius+b.radius;

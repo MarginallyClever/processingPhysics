@@ -36,19 +36,19 @@ void reset() {
 }
 
 void createWorldEdges() {
-  BodyBox b = new BodyBox(new PVector(0,0),new PVector(width,10));
+  BodyPolygon b = addBox(new PVector(0,0),new PVector(width,10));
   b.setStatic();
   bodies.add(b);
 
-  b = new BodyBox(new PVector(0,0),new PVector(10,height));
+  b = addBox(new PVector(0,0),new PVector(10,height));
   b.setStatic();
   bodies.add(b);
   
-  b = new BodyBox(new PVector(width-10,0),new PVector(width,height));
+  b = addBox(new PVector(width-10,0),new PVector(width,height));
   b.setStatic();
   bodies.add(b);
 
-  b = new BodyBox(new PVector(0,height-10),new PVector(width,height));
+  b = addBox(new PVector(0,height-10),new PVector(width,height));
   b.setStatic();
   bodies.add(b);
 }
@@ -106,7 +106,7 @@ void draw() {
   
   contacts.clear();
   
-  testForCollisions();
+  testAllCollisions();
   
   for( Body b : bodies ) {
     b.integrateForces(dt);
