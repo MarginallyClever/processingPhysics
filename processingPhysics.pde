@@ -50,6 +50,8 @@ void keyReleased() {
     case '4':  testOneBallAndWall();  break;
     case '5':  testOneBoxAndWall();  break;
     case '6':  testTwoBoxes();  break;
+    case '7':  testRandomShapesWithGravity();  break;
+    case '8':  testOneBoxAndOneCircleCornerHit();  break;
     case 'f':
     case 'F':  paused=!paused;  break;
     case ' ':  step=true;  break;
@@ -95,7 +97,6 @@ void draw() {
   testForCollisions();
   
   for( Body b : bodies ) {
-    //b.addGravity();
     b.integrateForces(dt);
   }
   

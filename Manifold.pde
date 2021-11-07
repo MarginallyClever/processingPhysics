@@ -4,9 +4,11 @@ float coefficientOfRestitution = 0.85;
 
 class Manifold {
   Body a, b;
-  PVector normal=new PVector();
+  PVector normal = new PVector();
   ArrayList<PVector> contacts = new ArrayList<PVector>();
-  float penetration=0;
+  float penetration = 0;
+  float staticFriction = 0.1;
+  float dynamicFriction = 0.1;
   
   public Manifold(Body a,Body b) {
     this.a=a;
@@ -43,6 +45,7 @@ class Manifold {
       
       println("Vr="+Vr);
       println("contactVel="+contactVel);
+      println("normal="+normal);
 
       stroke(  0,  0,255);  circle(p.x,p.y,5);
       //stroke(  0,  0,255);  line(p.x,p.y, p.x+normal.x*10,         p.y+normal.y*10);
@@ -60,16 +63,40 @@ class Manifold {
                             + b.getInverseMass() 
                             + sq(Ran) * a.getInverseMomentOfInertia() 
                             + sq(Rbn) * b.getInverseMomentOfInertia();
-      
+
       float Jr = -(1.0f +coefficientOfRestitution) * contactVel;
       Jr /= inverseMassSum;
       Jr /= numContacts;
-
       println("inverseMassSum="+inverseMassSum);
       println("Jr="+Jr);
       
       a.applyImpulse( PVector.mult(normal,-Jr), Ra );
       b.applyImpulse( PVector.mult(normal, Jr), Rb );
+
+      // Friction
+      PVector impulse = getFrictionImpulse(p,inverseMassSum,numContacts,Jr);
+      a.applyImpulse( PVector.mult(impulse,-1), Ra);
+      b.applyImpulse( impulse, Rb);
+    }
+  }
+  
+  PVector getFrictionImpulse(PVector p,float inverseMassSum,float numContacts,float Jr) {
+    PVector Va = a.getCombinedVelocityAtPoint(p);
+    PVector Vb = b.getCombinedVelocityAtPoint(p);
+    PVector Vr = PVector.sub(Vb,Va);
+    PVector t = PVector.sub(Vr,PVector.mult(normal,Vr.dot(normal)));
+    t.normalize();
+    
+    float Jt = -Vr.dot(t);
+    Jt /= inverseMassSum;
+    Jt /= numContacts;
+    
+    float v = abs(Jt);
+    if(v < 1e-6) return new PVector(0,0,0);
+    if(v < Jr*staticFriction) {
+      return t.mult(Jt);
+    } else {
+      return t.mult(-Jr*dynamicFriction);
     }
   }
   

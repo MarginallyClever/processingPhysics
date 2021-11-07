@@ -104,11 +104,11 @@ void testForCollisionsCircleBox(Manifold m,BodyCircle a,BodyBox b) {
   
   if(dot1 <= 0) {
     if(PVector.sub(a.position,Pa).magSq() > sq(a.radius)) return;
-    m.normal = PVector.sub(Pa,a.position);
+    m.normal = PVector.sub(Pa,a.position).normalize();
     m.contacts.add(Pa);
   } else if(dot2 <= 0) {
     if(PVector.sub(a.position,Pb).magSq() > sq(a.radius)) return;
-    m.normal = PVector.sub(Pb,a.position);
+    m.normal = PVector.sub(Pb,a.position).normalize();
     m.contacts.add(Pb);
   } else {
     PVector n = getNormalTo(Pa,Pb);

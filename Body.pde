@@ -57,16 +57,14 @@ abstract class Body {
     line(position.x, position.y,
          position.x+c*5, position.y+s*5);
   }
-
-  public void addGravity(float dt) {
-    this.force.add( PVector.mult(gravity,dt) );
-  }
   
   public void integrateForces(float dt) {
     if(this.getInverseMass()==0) return;
-    this.velocity.add( this.force.mult(getInverseMass()*dt) );
     
-    this.angularV.add(PVector.mult( this.torque, getInverseMomentOfInertia()*dt));
+    PVector f = PVector.add(gravity,PVector.mult(this.force,getInverseMass()));
+    
+    this.velocity.add( f.mult(dt) );
+    this.angularV.add( PVector.mult( this.torque, getInverseMomentOfInertia()*dt) );
   }
   
   public void integrateVelocity(float dt) {
