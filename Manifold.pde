@@ -7,8 +7,8 @@ class Manifold {
   PVector normal = new PVector();
   ArrayList<PVector> contacts = new ArrayList<PVector>();
   float penetration = 0;
-  float staticFriction = 0.1;
-  float dynamicFriction = 0.1;
+  float staticFriction = 0.5;
+  float dynamicFriction = 0.3;
   
   public Manifold(Body a,Body b) {
     this.a=a;

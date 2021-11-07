@@ -1,11 +1,23 @@
+//--------------------------------------------------
+// Physics in 2D
+// dan@marginallyclever.com 2021-11-04
+//--------------------------------------------------
+
+// things that can collide
 ArrayList<Body> bodies = new ArrayList<Body>();
+// all contacts in a given step of the scene
 ArrayList<Manifold> contacts = new ArrayList<Manifold>();
+
+// time of last frame, to control physics-steps-per-second
 long tLast;
-boolean paused=false;
-boolean step=false;
+
+boolean paused=false;  // are we?
+boolean step=false;  // should we?
+
 PVector gravity = new PVector(0,9.8);
 
 PVector camera = new PVector(0,0,1);
+
 
 void setup() {
   size(800,800);

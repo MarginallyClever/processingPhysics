@@ -30,8 +30,17 @@ class BodyBox extends Body {
   }
   
   public void render() {
-    stroke(myColor);
     PVector[] c = getCorners();
+    
+    fill(myColor);
+    stroke(myColor);
+    beginShape(TRIANGLE_FAN);
+    for(int i=0;i<4;++i) {
+      vertex(c[i].x,c[i].y);
+    }
+    endShape(CLOSE);
+
+    stroke(0,0,0);
     for(int i=0;i<4;++i) {
       int j=(i+1)%4;
       line(c[i].x,c[i].y,

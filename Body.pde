@@ -1,5 +1,5 @@
 abstract class Body {
-  public color myColor = color(0,0,0);
+  public color myColor = color(0,0,0,32);
   private float mass = 1;
   private float inverseMass = 1;
   private float momentOfInertia = 1;

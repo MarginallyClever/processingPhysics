@@ -12,7 +12,8 @@ class BodyCircle extends Body {
   }
   
   public void render() {
-    stroke(myColor);
+    fill(myColor);
+    stroke(0,0,0);
     circle(position.x,position.y,radius*2);
     
     super.render();
