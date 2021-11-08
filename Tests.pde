@@ -118,6 +118,18 @@ void testRandomShapesWithGravity() {
   gravity.set(0,9.8);
 }
 
+void testStackedBoxes() {
+  reset();
+  gravity.set(0,9.8);
+  
+  //BodyPolygon a = addBox(200,50,10);
+  BodyPolygon b = addBox(220,50,10);
+  BodyPolygon c = addBox(240,50,10);
+  //a.position.set(400,400);
+  b.position.set(400,500);
+  c.position.set(400,600);
+}
+
 BodyCircle addCircle(float r,float m) {
   BodyCircle b = new BodyCircle(r,m);
   bodies.add(b);

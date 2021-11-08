@@ -64,6 +64,7 @@ void keyReleased() {
     case '6':  testTwoBoxes();  break;
     case '7':  testRandomShapesWithGravity();  break;
     case '8':  testOneBoxAndOneCircleCornerHit();  break;
+    case '9':  testStackedBoxes();  break;
     case 'f':
     case 'F':  paused=!paused;  break;
     case ' ':  step=true;  break;
