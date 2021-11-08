@@ -1,18 +1,22 @@
 import java.util.*;
 
-float coefficientOfRestitution = 0.85;
-
 class Manifold {
   Body a, b;
   PVector normal = new PVector();
   ArrayList<PVector> contacts = new ArrayList<PVector>();
   float penetration = 0;
-  float staticFriction = 0.5;
-  float dynamicFriction = 0.3;
+  float staticFriction = 0;
+  float dynamicFriction = 0;
+  float e;
+  
   
   public Manifold(Body a,Body b) {
     this.a=a;
     this.b=b;
+    
+    e = min(a.restitution,b.restitution);
+    staticFriction = sqrt( a.staticFriction * b.staticFriction );
+    dynamicFriction = sqrt( a.dynamicFriction * b.dynamicFriction );
   }
   
   public String toString() {
@@ -35,17 +39,17 @@ class Manifold {
       return;
     }
         
-    //println("M: "+toString());
+    println("M: "+toString());
     
-    for( PVector p : contacts ) {      
+    for( PVector p : contacts ) {
       PVector Va = a.getCombinedVelocityAtPoint(p);
       PVector Vb = b.getCombinedVelocityAtPoint(p);
       PVector Vr = PVector.sub(Vb,Va);
       float contactVel = PVector.dot(Vr,normal);
       
-      //println("Vr="+Vr);
-      //println("contactVel="+contactVel);
-      //println("normal="+normal);
+      println("Vr="+Vr);
+      println("contactVel="+contactVel);
+      println("normal="+normal);
 
       stroke(  0,  0,255);  circle(p.x,p.y,5);
       //stroke(  0,  0,255);  line(p.x,p.y, p.x+normal.x*10,         p.y+normal.y*10);
@@ -64,7 +68,7 @@ class Manifold {
                             + sq(Ran) * a.getInverseMomentOfInertia() 
                             + sq(Rbn) * b.getInverseMomentOfInertia();
 
-      float Jr = -(1.0f +coefficientOfRestitution) * contactVel;
+      float Jr = -(1.0f + e) * contactVel;
       Jr /= inverseMassSum;
       Jr /= numContacts;
       //println("inverseMassSum="+inverseMassSum);
@@ -106,23 +110,23 @@ class Manifold {
     float numerator = max( penetration - k_slop, 0.0f );
     float denominator = a.getInverseMass() + b.getInverseMass();
     PVector correction = PVector.mult(this.normal, (numerator / denominator) * percent);
-    //a.position.sub( PVector.mult(correction, a.getInverseMass()) );
-    //b.position.add( PVector.mult(correction, b.getInverseMass()) );
+    a.position.sub( PVector.mult(correction, a.getInverseMass()) );
+    b.position.add( PVector.mult(correction, b.getInverseMass()) );
   }
 
   void testCollision() {
     if(a instanceof BodyCircle) {
       if(b instanceof BodyCircle) {
-        testCollisionCircleCircle(m,(BodyCircle)a,(BodyCircle)b);
+        testCollisionCircleCircle(this,(BodyCircle)a,(BodyCircle)b);
       } else if(b instanceof BodyPolygon) {
-        testCollisionCirclePolygon(m,(BodyCircle)a,(BodyPolygon)b);
+        testCollisionCirclePolygon(this,(BodyCircle)a,(BodyPolygon)b);
       }
     } else if(a instanceof BodyPolygon) {
       if(b instanceof BodyCircle) {
-        testCollisionCirclePolygon(m,(BodyCircle)b,(BodyPolygon)a);
-        m.normal.mult(-1);
+        testCollisionCirclePolygon(this,(BodyCircle)b,(BodyPolygon)a);
+        this.normal.mult(-1);
       } else if(b instanceof BodyPolygon) {
-        testCollisionPolygonPolygon(m,(BodyPolygon)a,(BodyPolygon)b);
+        testCollisionPolygonPolygon(this,(BodyPolygon)a,(BodyPolygon)b);
       }
     }
   }

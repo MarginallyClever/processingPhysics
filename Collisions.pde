@@ -9,7 +9,7 @@ void testAllCollisions() {
       if(b1.getInverseMass()==0 && b2.getInverseMass()==0) continue;
       
       Manifold m = new Manifold(b1,b2);
-      testCollision(m);
+      m.testCollision();
       if(m.contacts.size()>0) {
         contacts.add(m);
       }

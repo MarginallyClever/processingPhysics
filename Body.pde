@@ -4,6 +4,10 @@ abstract class Body {
   private float inverseMass = 1;
   private float momentOfInertia = 1;
   private float inverseMomentOfInertia = 1;
+  
+  public float restitution=1;
+  public float staticFriction = 0.9;
+  public float dynamicFriction = 0.9;
 
   public PVector position = new PVector(0,0);
   public PVector velocity = new PVector(0,0);
