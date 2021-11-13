@@ -29,6 +29,7 @@ void setup() {
 
 void reset() {
   println("reset()");
+  gravity.set(0,0);
   bodies.clear();
   paused=false;
   step=false;
@@ -62,11 +63,13 @@ void keyReleased() {
     case '4':  testOneBallAndWall();  break;
     case '5':  testOneBoxAndWall();  break;
     case '6':  testTwoBoxes();  break;
-    case '7':  testRandomShapesWithGravity();  break;
+    case '7':    break;
     case '8':  testOneBoxAndOneCircleCornerHit();  break;
     case '9':  testStackedBoxes();  break;
     case 'f':
     case 'F':  paused=!paused;  break;
+    case 'g':
+    case 'G':  gravity.z = ( gravity.z == 0 ? 9.8 : 0 );  break;
     case ' ':  step=true;  break;
     default: break;
   }

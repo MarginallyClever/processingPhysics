@@ -3,7 +3,6 @@ void testOneBallAndWall() {
   println("testOneBallAndWall()");
   reset();
   
-  gravity.set(0,0);
   BodyCircle a = addCircle(40,5);  
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
@@ -14,7 +13,6 @@ void testOneBoxAndWall() {
   println("testOneBallAndWall()");
   reset();
   
-  gravity.set(0,0);
   BodyPolygon a = addBox(30*4,20*4,15);
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
@@ -25,7 +23,6 @@ void testTwoBoxes() {
   println("testTwoBoxes()");
   reset();
   bodies.clear();
-  gravity.set(0,0);
   
   BodyPolygon a = addBox(30*4,20*4,5);
   BodyPolygon b = addBox(30*4,40*4,10);
@@ -41,7 +38,6 @@ void testTwoBoxes() {
 void testTwoCircles() {
   println("testTwoCircles()");
   reset();
-  gravity.set(0,0);
   
   BodyCircle a = addCircle(15,5);
   BodyCircle b = addCircle(30,10);
@@ -57,7 +53,6 @@ void testTwoCircles() {
 void testOneBoxAndOneCircle() {
   println("testOneBoxAndOneCircle()");
   reset();
-  gravity.set(0,0);
   
   BodyCircle a = addCircle(50,10);
   BodyPolygon b = addBox(5*20,10*20,20);
@@ -73,7 +68,6 @@ void testOneBoxAndOneCircle() {
 void testOneBoxAndOneCircleCornerHit() {
   println("testOneBoxAndOneCircleCornerHit()");
   reset();
-  gravity.set(0,0);
   
   BodyCircle a = addCircle(50,10);
   BodyPolygon b = addBox(5*20,5*20,20);
@@ -91,7 +85,7 @@ void testOneBoxAndOneCircleCornerHit() {
 void testRandomShapes() {
   println("testRandomShapes()");
   reset();
-  gravity.set(0,0);
+  
   for(int i=0;i<20;++i) {
     int dice = (int)random(1,20);
     if(i<8) {
@@ -113,21 +107,13 @@ void testRandomShapes() {
   }
 }
 
-void testRandomShapesWithGravity() {
-  testRandomShapes();
-  gravity.set(0,9.8);
-}
-
 void testStackedBoxes() {
   reset();
-  gravity.set(0,9.8);
   
-  //BodyPolygon a = addBox(200,50,10);
-  BodyPolygon b = addBox(220,50,10);
-  BodyPolygon c = addBox(240,50,10);
-  //a.position.set(400,400);
-  b.position.set(400,500);
-  c.position.set(400,600);
+  for(int i=0;i<6;++i) {
+    BodyPolygon a = addBox(200+20*i,50,10);
+    a.position.set(400,200+80*i);
+  }
 }
 
 BodyCircle addCircle(float r,float m) {

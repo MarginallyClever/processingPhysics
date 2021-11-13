@@ -65,6 +65,8 @@ abstract class Body {
   public void integrateForces(float dt) {
     if(this.getInverseMass()==0) return;
     
+    println("Gravity="+gravity.z);
+    
     PVector f = PVector.add(gravity,PVector.mult(this.force,getInverseMass()));
     
     this.velocity.add( f.mult(dt/2.0) );
