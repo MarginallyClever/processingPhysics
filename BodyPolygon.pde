@@ -17,21 +17,32 @@ class BodyPolygon extends Body {
     
     fill(myColor);
     stroke(myColor);
-    beginShape(TRIANGLE_FAN);
-    vertex(position.x,position.y);
+    beginShape();
     for(int i=0;i<cSize;++i) {
       vertex(c[i].x,c[i].y);
     }
-      vertex(c[0].x,c[0].y);
+    vertex(c[0].x,c[0].y);
     endShape(CLOSE);
 
+    renderOutline(c);
+    //renderNormals(c);
+    //renderRadius();
+  
+    super.render();
+  }
+
+  private void renderOutline(PVector[] c) {
+    int cSize = c.length;
     stroke(0,0,0);
     for(int i=0;i<cSize;++i) {
       int j=(i+1)%cSize;
       line(c[i].x,c[i].y,
            c[j].x,c[j].y);
     }
-    
+  }
+  
+  private void renderNormals(PVector[] c) {
+    int cSize = c.length;
     stroke(128,128,128);
     for(int i=0;i<cSize;++i) {
       int j=(i+1)%cSize;
@@ -40,12 +51,12 @@ class BodyPolygon extends Body {
       n = PVector.add(p,PVector.mult(n,10));
       line(p.x,p.y,n.x,n.y);
     }
-    
+  }
+  
+  private void renderRadius() {
     stroke(192,192,192);
     noFill();
     circle(position.x,position.y,radius*2);
-  
-    super.render();
   }
   
   public String toString() {
@@ -99,5 +110,24 @@ class BodyPolygon extends Body {
     }
     
     setMomentOfInertia(moi);
+  }
+  
+  PVector getSupport( PVector dir ) {
+    float bestProjection = -Float.MAX_VALUE;
+
+    PVector [] c = getPoints();
+    PVector bestVertex = c[0];
+    for(int i=0; i<c.length; ++i) {
+      PVector v = c[i];
+      float projection = v.dot(dir);
+
+      if(projection > bestProjection) {
+        bestVertex = v;
+        bestProjection = projection;
+      }
+    }
+    circle(bestVertex.x,bestVertex.y,20);
+
+    return bestVertex;
   }
 }

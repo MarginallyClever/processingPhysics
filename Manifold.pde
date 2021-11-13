@@ -39,7 +39,7 @@ class Manifold {
       return;
     }
         
-    println("M: "+toString());
+    //println("M: "+toString());
     
     for( PVector p : contacts ) {
       PVector Va = a.getCombinedVelocityAtPoint(p);
@@ -47,9 +47,9 @@ class Manifold {
       PVector Vr = PVector.sub(Vb,Va);
       float contactVel = PVector.dot(Vr,normal);
       
-      println("Vr="+Vr);
-      println("contactVel="+contactVel);
-      println("normal="+normal);
+      //println("Vr="+Vr);
+      //println("contactVel="+contactVel);
+      //println("normal="+normal);
 
       stroke(  0,  0,255);  circle(p.x,p.y,5);
       //stroke(  0,  0,255);  line(p.x,p.y, p.x+normal.x*10,         p.y+normal.y*10);
