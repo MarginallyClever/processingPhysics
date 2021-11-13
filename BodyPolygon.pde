@@ -126,7 +126,7 @@ class BodyPolygon extends Body {
         bestProjection = projection;
       }
     }
-    circle(bestVertex.x,bestVertex.y,20);
+    //circle(bestVertex.x,bestVertex.y,20);
 
     return bestVertex;
   }
