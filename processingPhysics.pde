@@ -69,7 +69,7 @@ void keyReleased() {
     case 'f':
     case 'F':  paused=!paused;  break;
     case 'g':
-    case 'G':  gravity.z = ( gravity.z == 0 ? 9.8 : 0 );  break;
+    case 'G':  gravity.y = ( gravity.y == 0 ? 9.8 : 0 );  break;
     case ' ':  step=true;  break;
     default: break;
   }
