@@ -2,6 +2,10 @@
 // Physics in 2D
 // dan@marginallyclever.com 2021-11-04
 //--------------------------------------------------
+import controlP5.*;
+
+ControlP5 cp5;
+DropdownList d1;
 
 // things that can collide
 ArrayList<Body> bodies = new ArrayList<Body>();
@@ -21,10 +25,48 @@ PVector camera = new PVector(0,0,1);
 
 void setup() {
   size(800,800);
+  cp5 = new ControlP5(this);
+  d1 = cp5.addDropdownList("Choose test")
+        .setPosition(20,20);
+  d1.addItem("Random Shapes",0);
+  d1.addItem("One Box And One Circle",1);
+  d1.addItem("Two Circles",2);
+  d1.addItem("One Ball And Wall",3);
+  d1.addItem("One Box And Wall",4);
+  d1.addItem("Two Boxes",5);
+  d1.addItem("One Box And One Circle Corner Hit",6);
+  d1.addItem("Stacked Boxes",7);
+  
   camera.set(width/2,height/2,1);
   noFill();
-  createWorldEdges();  
+  createWorldEdges();
   tLast = millis();
+}
+
+
+// d1 events happen here
+void controlEvent(ControlEvent theEvent) {
+  if (theEvent.isGroup()) {
+    // check if the Event was triggered from a ControlGroup
+    println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
+  } 
+  else if (theEvent.isController()) {
+    println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
+    if(theEvent.getController()==d1) {
+      int i = (int)theEvent.getController().getValue();
+      switch(i) {
+      case 0:  testRandomShapes();  break;
+      case 1:  testOneBoxAndOneCircle(); break;
+      case 2:  testTwoCircles();  break;
+      case 3:  testOneBallAndWall();  break;
+      case 4:  testOneBoxAndWall();  break;
+      case 5:  testTwoBoxes();  break;
+      case 6:  testOneBoxAndOneCircleCornerHit();  break;
+      case 7:  testStackedBoxes();  break;
+      default:  println("ERROR: controlEvent() undefined test.");  break;
+      }
+    }
+  }
 }
 
 void reset() {
@@ -57,15 +99,6 @@ void createWorldEdges() {
 void keyReleased() {
   println("key="+key);
   switch(key) {
-    case '1':  testRandomShapes();  break;
-    case '2':  testOneBoxAndOneCircle(); break;
-    case '3':  testTwoCircles();  break;
-    case '4':  testOneBallAndWall();  break;
-    case '5':  testOneBoxAndWall();  break;
-    case '6':  testTwoBoxes();  break;
-    case '7':    break;
-    case '8':  testOneBoxAndOneCircleCornerHit();  break;
-    case '9':  testStackedBoxes();  break;
     case 'f':
     case 'F':  paused=!paused;  break;
     case 'g':
