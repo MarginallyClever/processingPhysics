@@ -38,6 +38,7 @@ void setup() {
   d1.addItem("Stacked Boxes",7);
   
   camera.set(width/2,height/2,1);
+  //camera.set(0,0,1);
   noFill();
   createWorldEdges();
   tLast = millis();
@@ -56,7 +57,7 @@ void controlEvent(ControlEvent theEvent) {
       int i = (int)theEvent.getController().getValue();
       switch(i) {
       case 0:  testRandomShapes();  break;
-      case 1:  testOneBoxAndOneCircle(); break;
+      case 1:  testOneBoxAndOneCircle();  break;
       case 2:  testTwoCircles();  break;
       case 3:  testOneBallAndWall();  break;
       case 4:  testOneBoxAndWall();  break;
@@ -111,14 +112,38 @@ void keyReleased() {
 void mouseDragged() {
   float dx = mouseX-pmouseX;
   float dy = mouseY-pmouseY;
-  camera.x-=dx;
-  camera.y-=dy;
+  camera.x -= dx / camera.z;
+  camera.y -= dy / camera.z;
 }
 
 void mouseWheel(MouseEvent event) {
-  float e = event.getCount();
-  println("mouse="+e);
-  camera.z+=e/10;
+  float zoomChange = event.getCount()/10.0;
+  println("zoomChange="+zoomChange);
+
+  PVector m = new PVector(mouseX,mouseY,0);
+  PVector before = screenSpaceToWorldSpace(m);
+  
+  camera.z += zoomChange;
+  camera.z = max( camera.z, 0.1);
+ 
+  PVector after = screenSpaceToWorldSpace(m);
+  PVector diff = PVector.sub(after,before);
+  
+  camera.x -= diff.x;
+  camera.y -= diff.y;
+}
+
+PVector screenSpaceToWorldSpace(PVector in) {
+  float z = camera.z;
+  float iz = 1.0/z;
+  float x = in.x - (width  / 2.0);
+  float y = in.y - (height / 2.0);
+  
+  PVector out = new PVector(
+    x*iz + camera.x,
+    y*iz + camera.y
+  );
+  return out;
 }
 
 void draw() {
@@ -138,8 +163,18 @@ void draw() {
   
   background(255,255,255);
   pushMatrix();
-  translate(width/2-camera.x,height/2-camera.y);
   scale(camera.z);
+  translate(
+    -camera.x+(width/2.0)/camera.z,
+    -camera.y+(height/2.0)/camera.z
+  );
+  
+  PVector m2 = new PVector(mouseX,mouseY,0);
+  m2 = screenSpaceToWorldSpace(m2);
+  stroke(255,0,0);
+  drawStar(m2,20);
+  stroke(0,255,0);
+  drawStar(camera,10);
   
   contacts.clear();
   
@@ -172,6 +207,12 @@ void draw() {
   
   popMatrix();
 }
+
+void drawStar(PVector p,float radius) {
+  line(p.x-radius, p.y       , p.x+radius, p.y       );
+  line(p.x       , p.y-radius, p.x       , p.y+radius);
+}
+
 
 String colorToString(color c) {
   return "["+red(c)+","+green(c)+","+blue(c)+"]";
