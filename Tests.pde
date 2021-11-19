@@ -97,7 +97,7 @@ void testRandomShapes() {
       b.position.set(random(width-b.radius*2)+b.radius,
                      random(height-b.radius*2)+b.radius);
     } else {
-      BodyPolygon b = addMeteor(random(10,20),random(20,40),random(2,8));
+      BodyPolygon b = addMeteor(random(25,30),random(30,40),random(2,8));
       b.position.set(random(width-b.radius*2)+b.radius,
                      random(height-b.radius*2)+b.radius);
     }
