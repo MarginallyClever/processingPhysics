@@ -19,9 +19,7 @@ boolean paused=false;  // are we?
 boolean step=false;  // should we?
 
 PVector gravity = new PVector(0,9.8);
-
 PVector camera = new PVector(0,0,1);
-
 
 void setup() {
   size(800,800);
@@ -36,7 +34,7 @@ void setup() {
   d1.addItem("Two Boxes",5);
   d1.addItem("One Box And One Circle Corner Hit",6);
   d1.addItem("Stacked Boxes",7);
-  
+    
   camera.set(width/2,height/2,1);
   //camera.set(0,0,1);
   noFill();
@@ -104,6 +102,7 @@ void keyReleased() {
     case 'F':  paused=!paused;  break;
     case 'g':
     case 'G':  gravity.y = ( gravity.y == 0 ? 9.8 : 0 );  break;
+    case '=':  camera.z=1;  break;
     case ' ':  step=true;  break;
     default: break;
   }
@@ -117,6 +116,8 @@ void mouseDragged() {
 }
 
 void mouseWheel(MouseEvent event) {
+  if(d1.isMouseOver()) return;  // do not zoom when scrolling drop down list.
+  
   float zoomChange = event.getCount()/10.0;
   println("zoomChange="+zoomChange);
 
@@ -124,7 +125,7 @@ void mouseWheel(MouseEvent event) {
   PVector before = screenSpaceToWorldSpace(m);
   
   camera.z += zoomChange;
-  camera.z = max( camera.z, 0.1);
+  camera.z = max( camera.z, 0.05);
  
   PVector after = screenSpaceToWorldSpace(m);
   PVector diff = PVector.sub(after,before);
