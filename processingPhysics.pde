@@ -30,15 +30,15 @@ void setup() {
   cp5 = new ControlP5(this);
   d1 = cp5.addDropdownList("Choose test")
         .setPosition(20,20);
-  d1.addItem("Random Shapes",0);
-  d1.addItem("One Box And One Circle",1);
-  d1.addItem("Two Circles",2);
-  d1.addItem("One Ball And Wall",3);
-  d1.addItem("One Box And Wall",4);
-  d1.addItem("Two Boxes",5);
-  d1.addItem("One Box And One Circle Corner Hit",6);
-  d1.addItem("Stacked Boxes",7);
-  d1.addItem("Pinned box",8);
+  d1.addItem("Random shapes",0);
+  d1.addItem("One box and one circle",1);
+  d1.addItem("Two circles",2);
+  d1.addItem("One ball and wall",3);
+  d1.addItem("One box and wall",4);
+  d1.addItem("Two boxes",5);
+  d1.addItem("One box and one circle corner hit",6);
+  d1.addItem("Stacked boxes",7);
+  d1.addItem("Pinned boxes",8);
     
   camera.set(width/2,height/2,1);
   //camera.set(0,0,1);
@@ -67,7 +67,7 @@ void controlEvent(ControlEvent theEvent) {
       case 5:  testTwoBoxes();  break;
       case 6:  testOneBoxAndOneCircleCornerHit();  break;
       case 7:  testStackedBoxes();  break;
-      case 8:  testPinnedBox();  break;
+      case 8:  testPinnedBoxes();  break;
       default:  println("ERROR: controlEvent() undefined test.");  break;
       }
     }
@@ -201,12 +201,12 @@ void draw() {
     b.integrateForces(dt);
   }
   
-  for( Constraint c : constraints ) {
-    c.resolveConstraint();
-  }
-  
   for( Manifold m : contacts ) {
     m.resolveCollisions();
+  }
+  
+  for( Constraint c : constraints ) {
+    c.resolveConstraint();
   }
   
   for( Body b : bodies ) {

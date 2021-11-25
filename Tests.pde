@@ -116,14 +116,18 @@ void testStackedBoxes() {
   }
 }
 
-void testPinnedBox() {
+void testPinnedBoxes() {
   reset();
   
-  BodyPolygon a = addBox(150,50,5);
-  a.position.set(400+70,400-20);
-  
-  PVector pinPoint = new PVector(400,400);
+  BodyPolygon a = addBox(150,50,150*50);
+  a.position.set(400+(150/2+10),400-20);
+  PVector pinPoint = new PVector(400+20,400);
   constraints.add(new PinConstraint(a,a.worldToLocal(pinPoint),pinPoint));
+    
+  BodyPolygon b = addBox(150,50,150*50);
+  b.position.set(400-(150/2+10),400-20);
+  pinPoint = new PVector(400-40,400);
+  constraints.add(new PinConstraint(b,b.worldToLocal(pinPoint),pinPoint));
 }
 
 

@@ -16,19 +16,24 @@ abstract class Constraint {
 class PinConstraint extends Constraint {
   PinConstraint(Body a,PVector aPoint,PVector bPoint) {
     aBody=a;
-    aPoint.set(aPoint);
-    bPoint.set(bPoint);
+    this.aPoint.set(aPoint);
+    this.bPoint.set(bPoint);
   }
   
   void resolveConstraint() {
     PVector aPointW = aBody.localToWorld(aPoint);
     stroke(255,0,255);
     drawStar(aPointW,5);
+    stroke(255,255,0);
+    drawStar(bPoint,5);
     
     PVector impulse = aBody.getCombinedVelocityAtPoint(aPointW);
     impulse.mult(-1);
     PVector Ra = aBody.getR(aPointW);
     aBody.applyImpulse(impulse,Ra);
+    
+    PVector drift = PVector.sub(aPointW,bPoint);
+    aBody.position.sub(drift);
   }
 }
 
