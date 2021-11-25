@@ -1,18 +1,34 @@
 abstract class Constraint {
-  // the first body in the constraint (must be at least one)
   Body aBody;
-  // the point in the body - relative to aBody - where the constraint happens.
   PVector aPoint = new PVector();
+
+  Body bBody;
+  PVector bPoint = new PVector();
   
   abstract void resolveConstraint();
 }
 
 
 // this body is pinned at one point.
+// aPoint is relative to the body.
+// bPoint is relative to the world.
+// by comparing the two drift can be calculated and compensated
 class PinConstraint extends Constraint {
+  PinConstraint(Body a,PVector aPoint,PVector bPoint) {
+    aBody=a;
+    aPoint.set(aPoint);
+    bPoint.set(bPoint);
+  }
+  
   void resolveConstraint() {
-    PVector aPointW = new PVector();
+    PVector aPointW = aBody.localToWorld(aPoint);
+    stroke(255,0,255);
+    drawStar(aPointW,5);
     
+    PVector impulse = aBody.getCombinedVelocityAtPoint(aPointW);
+    impulse.mult(-1);
+    PVector Ra = aBody.getR(aPointW);
+    aBody.applyImpulse(impulse,Ra);
   }
 }
 
@@ -24,17 +40,11 @@ class FixedConstraint extends Constraint {
 
 
 // two bodies that pinned to each other
-class HingeConstraint extends Constraint {  
-  Body bBody;
-  PVector bPoint = new PVector();
-  
+class HingeConstraint extends Constraint {    
   void resolveConstraint() {}
 }
 
 
-class SpringConstraint extends Constraint {
-  Body bBody;
-  PVector bPoint = new PVector();
-  
+class SpringConstraint extends Constraint {  
   void resolveConstraint() {}
 }

@@ -24,6 +24,7 @@ PVector camera = new PVector(0,0,1);
 
 boolean dragOn=false;
 
+
 void setup() {
   size(800,800);
   cp5 = new ControlP5(this);
@@ -37,6 +38,7 @@ void setup() {
   d1.addItem("Two Boxes",5);
   d1.addItem("One Box And One Circle Corner Hit",6);
   d1.addItem("Stacked Boxes",7);
+  d1.addItem("Pinned box",8);
     
   camera.set(width/2,height/2,1);
   //camera.set(0,0,1);
@@ -65,6 +67,7 @@ void controlEvent(ControlEvent theEvent) {
       case 5:  testTwoBoxes();  break;
       case 6:  testOneBoxAndOneCircleCornerHit();  break;
       case 7:  testStackedBoxes();  break;
+      case 8:  testPinnedBox();  break;
       default:  println("ERROR: controlEvent() undefined test.");  break;
       }
     }
@@ -198,12 +201,12 @@ void draw() {
     b.integrateForces(dt);
   }
   
-  for( Manifold m : contacts ) {
-    m.resolveCollisions();
-  }
-  
   for( Constraint c : constraints ) {
     c.resolveConstraint();
+  }
+  
+  for( Manifold m : contacts ) {
+    m.resolveCollisions();
   }
   
   for( Body b : bodies ) {
