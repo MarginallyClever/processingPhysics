@@ -12,7 +12,7 @@ class BodyPolygon extends Body {
   }
   
   public void render() {
-    PVector[] c = getPoints();
+    PVector[] c = getWorldPoints();
     int cSize = c.length;
     
     fill(myColor);
@@ -74,14 +74,12 @@ class BodyPolygon extends Body {
           +"]";
   }
   
-  PVector [] getPoints() {
-    PVector[] corners = new PVector[points.size()];
+  PVector [] getWorldPoints() {
+    PVector[] worldPoints = new PVector[points.size()];
     for(int i=0;i<points.size();++i) {
-      corners[i] = points.get(i).copy();
-      corners[i].rotate(this.angle.z);
-      corners[i].add(this.position);
+      worldPoints[i] = localToWorld(points.get(i));
     }
-    return corners;
+    return worldPoints;
   }
   
   void updateShape() {
@@ -115,7 +113,7 @@ class BodyPolygon extends Body {
   PVector getSupport( PVector dir ) {
     float bestProjection = -Float.MAX_VALUE;
 
-    PVector [] c = getPoints();
+    PVector [] c = getWorldPoints();
     PVector bestVertex = c[0];
     for(int i=0; i<c.length; ++i) {
       PVector v = c[i];

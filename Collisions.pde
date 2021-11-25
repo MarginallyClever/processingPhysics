@@ -27,8 +27,8 @@ void testCollisionPolygonPolygonOld(Manifold m,BodyPolygon a,BodyPolygon b) {
   float d2 = PVector.sub(a.position,b.position).magSq();
   if(d2 > sq(a.radius+b.radius) ) return;
   
-  PVector [] aCorners = a.getPoints();
-  PVector [] bCorners = b.getPoints();
+  PVector [] aCorners = a.getWorldPoints();
+  PVector [] bCorners = b.getWorldPoints();
   
   int aSize = aCorners.length;
   int bSize = bCorners.length;
@@ -87,7 +87,7 @@ void testCollisionPolygonPolygonNew(Manifold m,BodyPolygon a,BodyPolygon b) {
   
   ArrayList<PVector> face = findIncidentFace(b1,b2,faceIndex);
   
-  PVector [] aCorners = b1.getPoints();
+  PVector [] aCorners = b1.getWorldPoints();
   PVector v1 = aCorners[faceIndex];
   PVector v2 = aCorners[(faceIndex+1)%aCorners.length];
   PVector sideNormal = PVector.sub(v2,v1);
@@ -188,7 +188,7 @@ ArrayList<PVector> findIncidentFace(BodyPolygon a,BodyPolygon b,int faceIndex) {
   ArrayList<PVector> list = new ArrayList<PVector>();
   
   // get normal of edge 'faceIndex'
-  PVector [] aCorners = a.getPoints();
+  PVector [] aCorners = a.getWorldPoints();
   int faceIndex2 = (faceIndex+1)%aCorners.length;
   PVector n = getNormalTo(aCorners[faceIndex],aCorners[faceIndex2]);
 
@@ -196,7 +196,7 @@ ArrayList<PVector> findIncidentFace(BodyPolygon a,BodyPolygon b,int faceIndex) {
   BestFitPair f = new BestFitPair();
   f.fit = Float.MAX_VALUE;
 
-  PVector [] bCorners = b.getPoints();
+  PVector [] bCorners = b.getWorldPoints();
   int bSize = bCorners.length;
   for( int i=0;i<bSize;++i) {
     int j=(i+1)%bSize;
@@ -216,7 +216,7 @@ ArrayList<PVector> findIncidentFace(BodyPolygon a,BodyPolygon b,int faceIndex) {
 
 BestFitPair findAxisLeastPenetration( BodyPolygon a, BodyPolygon b ) {
   BestFitPair best = new BestFitPair();
-  PVector [] aCorners = a.getPoints();
+  PVector [] aCorners = a.getWorldPoints();
   int aSize = aCorners.length;
 
   PVector bestNormal = null;
@@ -257,7 +257,7 @@ void testCollisionCirclePolygon(Manifold m,BodyCircle a,BodyPolygon b) {
 
   PVector center = a.position;
   BestFitPair best = new BestFitPair();
-  PVector [] corners = b.getPoints();
+  PVector [] corners = b.getWorldPoints();
   int bSize = corners.length;
   for(int i=0;i<bSize;++i) {
     int j = (i+1)%bSize;
