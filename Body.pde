@@ -65,8 +65,7 @@ abstract class Body {
   public void integrateForces(float dt) {
     if(this.getInverseMass()==0) return;
     
-    println("Gravity="+gravity.z);
-    
+    //println("Gravity="+gravity.z);
     PVector f = PVector.add(gravity,PVector.mult(this.force,getInverseMass()));
     
     this.velocity.add( f.mult(dt/2.0) );
@@ -103,9 +102,8 @@ abstract class Body {
   }
   
   PVector worldToLocal(PVector in) {
-    // adjust for position
-    PVector out = PVector.sub(in,this.position);
-    // adjust for rotation
+    PVector out = in.copy();
+    out.sub(this.position);
     out.rotate(-this.angle.z);
     return out;
   }
@@ -116,4 +114,6 @@ abstract class Body {
     out.add(this.position);
     return out;
   }
+  
+  abstract boolean pointInside(PVector p);
 }

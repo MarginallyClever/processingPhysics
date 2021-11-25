@@ -22,7 +22,12 @@ boolean step=false;  // should we?
 PVector gravity = new PVector(0,9.8);
 PVector camera = new PVector(0,0,1);
 
-boolean dragOn=false;
+boolean moveCameraOn=false;
+
+boolean dragShapeOn=false;
+Body bodyUnderCursor;
+Constraint bodyToCursor = new PinConstraint(null,new PVector(),new PVector());
+
 
 
 void setup() {
@@ -115,16 +120,46 @@ void keyReleased() {
 }
 
 void mousePressed() {
-  if(mouseButton == CENTER) dragOn=true;
-  else dragOn=false;
+  if(mouseButton == CENTER) moveCameraOn=true;
+  else moveCameraOn=false;
+  if(mouseButton == LEFT) beginDragShape();
 }
 
 void mouseReleased() {
-  dragOn=false;
+  if(mouseButton == CENTER) moveCameraOn=false;
+  if(mouseButton == LEFT) endDragShape();
 }
 
+void beginDragShape() {
+  if(!dragShapeOn && bodyUnderCursor!=null) {
+    println("beginDragShape");
+    bodyToCursor.aBody = bodyUnderCursor;
+    dragShapeOn=true;
+    PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
+    bodyToCursor.aPoint.set(bodyUnderCursor.worldToLocal(mouseWorld));
+    bodyToCursor.bPoint.set(mouseWorld);
+  }
+}
+
+void dragShape() {
+  println("a");
+  if(!dragShapeOn) return;
+  println("b");
+  if(bodyToCursor.aBody==null) return;
+  println("dragging");
+  PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
+  bodyToCursor.bPoint.set(mouseWorld);
+  bodyToCursor.resolveConstraint();
+}
+
+void endDragShape() {
+  println("endDragShape");
+  dragShapeOn=false;
+}
+
+
 void mouseDragged() {
-  if( !dragOn ) return;
+  if( !moveCameraOn ) return;
   float dx = mouseX-pmouseX;
   float dy = mouseY-pmouseY;
   camera.x -= dx / camera.z;
@@ -186,10 +221,9 @@ void draw() {
     -camera.y+(height/2.0)/camera.z
   );
   
-  PVector m2 = new PVector(mouseX,mouseY,0);
-  m2 = screenSpaceToWorldSpace(m2);
+  PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
   stroke(255,0,0);
-  drawStar(m2,20);
+  drawStar(mouseWorld,20);
   stroke(0,255,0);
   drawStar(camera,10);
   
@@ -208,6 +242,7 @@ void draw() {
   for( Constraint c : constraints ) {
     c.resolveConstraint();
   }
+  dragShape();
   
   for( Body b : bodies ) {
     b.integrateVelocity(dt);
@@ -226,14 +261,28 @@ void draw() {
     b.render();
   }
   
+  highlightBodyUnderCursor(mouseWorld);
+  
   popMatrix();
+}
+
+void highlightBodyUnderCursor(PVector mouseWorld) {
+  strokeWeight(4);
+  bodyToCursor.aBody=null;
+  
+  for( Body b : bodies ) {
+    if(b.pointInside(mouseWorld)) {
+      if(!dragShapeOn) bodyUnderCursor = b;
+      b.render();
+    }
+  }
+  strokeWeight(1);
 }
 
 void drawStar(PVector p,float radius) {
   line(p.x-radius, p.y       , p.x+radius, p.y       );
   line(p.x       , p.y-radius, p.x       , p.y+radius);
 }
-
 
 String colorToString(color c) {
   return "["+red(c)+","+green(c)+","+blue(c)+"]";
@@ -246,4 +295,19 @@ PVector getNormalTo(PVector start,PVector end) {
   n.y=-temp;
   n.normalize();
   return n;
+}
+
+boolean pointInTriangle(PVector pt,PVector v1,PVector v2,PVector v3) {
+  float d1 = pointInTriangleSign(pt, v1, v2);
+  float d2 = pointInTriangleSign(pt, v2, v3);
+  float d3 = pointInTriangleSign(pt, v3, v1);
+
+  boolean has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+  boolean has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+  return !(has_neg && has_pos);
+}
+
+float pointInTriangleSign(PVector p1, PVector p2, PVector p3) {
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }

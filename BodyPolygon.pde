@@ -128,4 +128,23 @@ class BodyPolygon extends Body {
 
     return bestVertex;
   }
+  
+  boolean pointInside(PVector pWorld) {
+    int count = points.size();
+    if(count==0) return false;
+    
+    PVector pLocal = worldToLocal(pWorld);
+    PVector p0 = points.get(0);
+    PVector center = new PVector(0,0,0);
+    
+    for(int i=0; i<count; ++i) {
+      int j = (i+1) % count;
+      PVector p1 = points.get(j);
+      
+      if(pointInTriangle(pLocal,center,p0,p1)) return true;
+      p0=p1;
+    }
+    
+    return false;
+  }
 }

@@ -36,4 +36,9 @@ class BodyCircle extends Body {
   void updateShape() {
     setMomentOfInertia(PI * this.getMass() * pow(this.radius,4) / 4);
   }
+  
+  boolean pointInside(PVector pWorld) {
+    PVector diff = PVector.sub(pWorld,this.position);
+    return (diff.magSq() <= sq(radius));
+  }
 }
