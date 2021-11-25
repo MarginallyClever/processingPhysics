@@ -5,9 +5,9 @@ abstract class Body {
   private float momentOfInertia = 1;
   private float inverseMomentOfInertia = 1;
   
-  public float restitution=1;
-  public float staticFriction = 0.9;
-  public float dynamicFriction = 0.9;
+  public float restitution=0.98;
+  public float staticFriction = 0.5;
+  public float dynamicFriction = 0.8;
 
   public PVector position = new PVector(0,0);
   public PVector velocity = new PVector(0,0);
@@ -100,5 +100,20 @@ abstract class Body {
   
   PVector getR(PVector p) {
     return PVector.sub(p,this.position);
+  }
+  
+  PVector worldToLocal(PVector in) {
+    // adjust for position
+    PVector out = PVector.sub(in,this.position);
+    // adjust for rotation
+    out.rotate(-this.angle.z);
+    return out;
+  }
+  
+  PVector localToWorld(PVector in) {
+    PVector out = in.copy();
+    out.rotate(this.angle.z);
+    out.add(this.position);
+    return out;
   }
 }
