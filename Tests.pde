@@ -116,6 +116,15 @@ void testStackedBoxes() {
   }
 }
 
+void testPinnedBox() {
+  BodyPolygon a = addBox(150,50,5);
+  a.position.set(400-40,400+140);
+  Constraint c = new PinConstraint();
+  c.aBody=a;
+  //c.aPoint 
+}
+
+
 BodyCircle addCircle(float r,float m) {
   BodyCircle b = new BodyCircle(r,m);
   bodies.add(b);

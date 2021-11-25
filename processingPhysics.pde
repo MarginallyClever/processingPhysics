@@ -11,6 +11,7 @@ DropdownList d1;
 ArrayList<Body> bodies = new ArrayList<Body>();
 // all contacts in a given step of the scene
 ArrayList<Manifold> contacts = new ArrayList<Manifold>();
+ArrayList<Constraint> constraints = new ArrayList<Constraint>();
 
 // time of last frame, to control physics-steps-per-second
 long tLast;
@@ -20,6 +21,8 @@ boolean step=false;  // should we?
 
 PVector gravity = new PVector(0,9.8);
 PVector camera = new PVector(0,0,1);
+
+boolean dragOn=false;
 
 void setup() {
   size(800,800);
@@ -108,7 +111,17 @@ void keyReleased() {
   }
 }
 
+void mousePressed() {
+  if(mouseButton == CENTER) dragOn=true;
+  else dragOn=false;
+}
+
+void mouseReleased() {
+  dragOn=false;
+}
+
 void mouseDragged() {
+  if( !dragOn ) return;
   float dx = mouseX-pmouseX;
   float dy = mouseY-pmouseY;
   camera.x -= dx / camera.z;
@@ -187,6 +200,10 @@ void draw() {
   
   for( Manifold m : contacts ) {
     m.resolveCollisions();
+  }
+  
+  for( Constraint c : constraints ) {
+    c.resolveConstraint();
   }
   
   for( Body b : bodies ) {
