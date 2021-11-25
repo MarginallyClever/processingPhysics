@@ -26,7 +26,7 @@ boolean moveCameraOn=false;
 
 boolean dragShapeOn=false;
 Body bodyUnderCursor;
-Constraint bodyToCursor = new PinConstraint(null,new PVector(),new PVector());
+SpringConstraint bodyToCursor = new SpringConstraint(null,new PVector(),new PVector());
 
 
 
@@ -34,16 +34,16 @@ void setup() {
   size(800,800);
   cp5 = new ControlP5(this);
   d1 = cp5.addDropdownList("Choose test")
-        .setPosition(20,20);
-  d1.addItem("Random shapes",0);
-  d1.addItem("One box and one circle",1);
-  d1.addItem("Two circles",2);
-  d1.addItem("One ball and wall",3);
-  d1.addItem("One box and wall",4);
-  d1.addItem("Two boxes",5);
-  d1.addItem("One box and one circle corner hit",6);
-  d1.addItem("Stacked boxes",7);
-  d1.addItem("Pinned boxes",8);
+          .setPosition(20,20)
+          .addItem("Random shapes",0)
+          .addItem("One box and one circle",1)
+          .addItem("Two circles",2)
+          .addItem("One ball and wall",3)
+          .addItem("One box and wall",4)
+          .addItem("Two boxes",5)
+          .addItem("One box and one circle corner hit",6)
+          .addItem("Stacked boxes",7)
+          .addItem("Pinned boxes",8);
     
   camera.set(width/2,height/2,1);
   //camera.set(0,0,1);
@@ -134,6 +134,7 @@ void beginDragShape() {
   if(!dragShapeOn && bodyUnderCursor!=null) {
     println("beginDragShape");
     bodyToCursor.aBody = bodyUnderCursor;
+    bodyToCursor.setRestingLength();
     dragShapeOn=true;
     PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
     bodyToCursor.aPoint.set(bodyUnderCursor.worldToLocal(mouseWorld));
@@ -142,7 +143,7 @@ void beginDragShape() {
 }
 
 void dragShape() {
-  println("a");
+  //println("a");
   if(!dragShapeOn) return;
   println("b");
   if(bodyToCursor.aBody==null) return;
@@ -268,7 +269,7 @@ void draw() {
 
 void highlightBodyUnderCursor(PVector mouseWorld) {
   strokeWeight(4);
-  bodyToCursor.aBody=null;
+  bodyUnderCursor=null;
   
   for( Body b : bodies ) {
     if(b.pointInside(mouseWorld)) {
