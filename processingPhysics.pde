@@ -1,6 +1,11 @@
 //--------------------------------------------------
 // Physics in 2D
 // dan@marginallyclever.com 2021-11-04
+//
+// see https://www.youtube.com/watch?v=SHinxAhv1ZE
+// see https://www.cs.ubc.ca/~rhodin/2020_2021_CPSC_427/lectures/D_CollisionTutorial.pdf
+// see godot engine https://github.com/godotengine/godot
+// see ImpulseEngine https://github.com/RandyGaul/ImpulseEngine
 //--------------------------------------------------
 import controlP5.*;
 
@@ -24,10 +29,14 @@ PVector camera = new PVector(0,0,1);
 
 boolean moveCameraOn=false;
 
+// for dragging (makes a rubber band that pulls a shape)
 boolean dragShapeOn=false;
 Body bodyUnderCursor;
 SpringConstraint bodyToCursor = new SpringConstraint(null,new PVector(),new PVector());
 
+// for applying impulses to shapes (nudge them)
+boolean applyImpulseOn = false;
+PVector applyImpulseStart = new PVector();
 
 
 void setup() {
@@ -49,6 +58,9 @@ void setup() {
   
   noFill();
   reset();
+  
+  bodyToCursor.springConstant=50;
+  
   tLast = millis();
 }
 
@@ -85,6 +97,7 @@ void reset() {
   println("reset()");
   gravity.set(0,0);
   bodies.clear();
+  constraints.clear();
   paused=false;
   step=false;
   createWorldEdges();
@@ -121,7 +134,9 @@ void keyReleased() {
     case 'g':
     case 'G':  gravity.y = ( gravity.y == 0 ? 9.8 : 0 );  break;
     case '=':  camera.z=1;  break;
-    case ' ':  step=true;  break;
+    case ' ':  step=true;  paused=true;  break;
+    case '+':  bodyToCursor.springConstant++;  println("springConstant="+bodyToCursor.springConstant);  break;
+    case '-':  bodyToCursor.springConstant--;  println("springConstant="+bodyToCursor.springConstant);  break;
     default: break;
   }
 }
@@ -130,32 +145,68 @@ void mousePressed() {
   if(mouseButton == CENTER) moveCameraOn=true;
   else moveCameraOn=false;
   if(mouseButton == LEFT) beginDragShape();
+  if(mouseButton == RIGHT) beginApplyImpulse();
 }
 
 void mouseReleased() {
   if(mouseButton == CENTER) moveCameraOn=false;
   if(mouseButton == LEFT) endDragShape();
+  if(mouseButton == RIGHT) endApplyImpulse();
+}
+
+void beginApplyImpulse() {
+  if(applyImpulseOn) return;
+  
+  applyImpulseOn=true;
+  applyImpulseStart = getMouseWorld();
+}
+
+void endApplyImpulse() {
+  if(!applyImpulseOn) return;
+  applyImpulseOn=false;
+  if(bodyUnderCursor==null) return;
+  
+  PVector applyImpulseEnd = getMouseWorld();
+  PVector diff = PVector.sub(applyImpulseEnd,applyImpulseStart);
+  diff.mult(bodyUnderCursor.mass);
+  
+  bodyUnderCursor.applyImpulse(diff,bodyUnderCursor.getR(applyImpulseEnd));
+}
+
+void drawApplyImpulse() {
+  if(!applyImpulseOn) return;
+  PVector applyImpulseEnd = getMouseWorld();
+  PVector t0 = applyImpulseStart.copy();
+  
+  float steps=10;
+  for(float i=1;i<=steps;++i) {
+    PVector t1 = PVector.lerp(applyImpulseStart,applyImpulseEnd,i/steps);
+    stroke(255.0* i/steps,0,0);
+    line(t0.x,t0.y,t1.x,t1.y);
+    t0.set(t1);
+  }
+}
+
+PVector getMouseWorld() {
+  return screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
 }
 
 void beginDragShape() {
   if(!dragShapeOn && bodyUnderCursor!=null) {
+    dragShapeOn=true;
     println("beginDragShape");
     bodyToCursor.aBody = bodyUnderCursor;
-    bodyToCursor.setRestingLength();
-    dragShapeOn=true;
-    PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
+    PVector mouseWorld = getMouseWorld();
     bodyToCursor.aPoint.set(bodyUnderCursor.worldToLocal(mouseWorld));
     bodyToCursor.bPoint.set(mouseWorld);
+    bodyToCursor.setRestingLength();
   }
 }
 
 void dragShape() {
-  //println("a");
   if(!dragShapeOn) return;
-  println("b");
   if(bodyToCursor.aBody==null) return;
-  println("dragging");
-  PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
+  PVector mouseWorld = getMouseWorld();
   bodyToCursor.bPoint.set(mouseWorld);
   bodyToCursor.resolveConstraint();
 }
@@ -229,7 +280,7 @@ void draw() {
     -camera.y+(height/2.0)/camera.z
   );
   
-  PVector mouseWorld = screenSpaceToWorldSpace(new PVector(mouseX,mouseY,0));
+  PVector mouseWorld = getMouseWorld();
   stroke(255,0,0);
   drawStar(mouseWorld,20);
   stroke(0,255,0);
@@ -243,17 +294,16 @@ void draw() {
     b.integrateForces(dt);
   }
   
-  for( Manifold m : contacts ) {
-    m.resolveCollisions();
-  }
-  
   for( Constraint c : constraints ) {
     c.resolveConstraint();
   }
-  dragShape();
   
   for( Body b : bodies ) {
     b.integrateVelocity(dt);
+  }
+  
+  for( Manifold m : contacts ) {
+    m.resolveCollisions();
   }
   
   for( Manifold m : contacts ) {
@@ -269,21 +319,31 @@ void draw() {
     b.render();
   }
   
-  highlightBodyUnderCursor(mouseWorld);
+  dragShape();
+  updateBodyUnderCursor(mouseWorld);
+  highlightBodyUnderCursor();
+  drawApplyImpulse();
   
   popMatrix();
 }
 
-void highlightBodyUnderCursor(PVector mouseWorld) {
-  strokeWeight(4);
+void updateBodyUnderCursor(PVector mouseWorld) {
   bodyUnderCursor=null;
   
   for( Body b : bodies ) {
     if(b.pointInside(mouseWorld)) {
-      if(!dragShapeOn) bodyUnderCursor = b;
-      b.render();
+      if(!dragShapeOn) {
+        bodyUnderCursor = b;
+        return;
+      }
     }
   }
+}
+
+void highlightBodyUnderCursor() {
+  if(bodyUnderCursor==null) return;
+  strokeWeight(3);
+  bodyUnderCursor.render();
   strokeWeight(1);
 }
 
@@ -318,4 +378,13 @@ boolean pointInTriangle(PVector pt,PVector v1,PVector v2,PVector v3) {
 
 float pointInTriangleSign(PVector p1, PVector p2, PVector p3) {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}
+
+
+void lineA2B(PVector a,PVector b) {
+  line(a.x,a.y,b.x,b.y);
+}
+
+void lineAPlusB(PVector a,PVector b) {
+  line(a.x,a.y,a.x+b.x,a.y+b.y);
 }
