@@ -147,4 +147,21 @@ class BodyPolygon extends Body {
     
     return false;
   }
+  
+  void updateMass(double scale) {
+    int count = points.size();
+    if(count<3) setMass(0);
+ 
+    float m=0;
+    PVector p0 = points.get(0);
+    PVector center = new PVector(0,0,0);
+    
+    for(int i=0; i<count; ++i) {
+      int j = (i+1) % count;
+      PVector p1 = points.get(j);
+      m += triangleArea(center,center,p0,p1);
+      p0=p1;
+    }
+    setMass(m);
+  }
 }
