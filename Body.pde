@@ -91,19 +91,6 @@ abstract class Body {
     this.velocity.add( linVel );
     this.angularV.add( PVector.mult( contactVector.cross(impulse), getInverseMomentOfInertia() ) );
   }
-    
-  void applyImpulseAtPoint(PVector impulse,PVector p) {
-    PVector linVel = PVector.mult( impulse,getInverseMass() );
-    stroke(255,128,255);
-    line(position.x,
-         position.y, 
-         position.x+linVel.x, 
-         position.y+linVel.y);
-      
-    this.velocity.add( linVel );
-    
-    this.angularV.add( PVector.mult( getR(p).cross(impulse), getInverseMomentOfInertia() ) );
-  }
   
   PVector getCombinedVelocityAtPoint(PVector p) {
     PVector r = getR(p);

@@ -110,11 +110,8 @@ class SpringConstraint extends Constraint {
     
     if(bBody!=null) {
       diff.mult(0.5);
-      PVector Rb = bBody.getR(bPointW);
-      bBody.applyImpulse(PVector.mult(diff,-1),Rb);
+      bBody.applyImpulse(PVector.mult(diff,-1),bBody.getR(bPointW));
     }
-    
-    PVector Ra = aBody.getR(aPointW);
-    aBody.applyImpulse(diff,Ra);
+    aBody.applyImpulse(diff,aBody.getR(aPointW));
   }
 }
