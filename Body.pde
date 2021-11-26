@@ -5,9 +5,9 @@ abstract class Body {
   private float momentOfInertia = 1;
   private float inverseMomentOfInertia = 1;
   
-  public float restitution=0.98;
-  public float staticFriction = 0.5;
-  public float dynamicFriction = 0.8;
+  public float restitution = 0.8;
+  public float staticFriction = 0.75;
+  public float dynamicFriction = 0.5;
 
   public PVector position = new PVector(0,0);
   public PVector velocity = new PVector(0,0);
@@ -40,9 +40,9 @@ abstract class Body {
   }
   
   public void setMomentOfInertia(float moi) {
-    this.momentOfInertia=moi;
-    if(moi==0) this.inverseMomentOfInertia=0;
-    else this.inverseMomentOfInertia=1.0/moi;
+    this.momentOfInertia = moi;
+    if(moi==0) this.inverseMomentOfInertia = 0;
+    else this.inverseMomentOfInertia = 1.0/moi;
   }
   
   public void setStatic() {
@@ -86,8 +86,8 @@ abstract class Body {
     stroke(255,128,255);
     line(position.x,
          position.y, 
-         position.x+linVel.x, 
-         position.y+linVel.y);
+         position.x+linVel.x*50, 
+         position.y+linVel.y*50);
 
     this.velocity.add( linVel );
     this.angularV.add( PVector.mult( contactVector.cross(impulse), getInverseMomentOfInertia() ) );
