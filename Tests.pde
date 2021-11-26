@@ -114,6 +114,7 @@ void testStackedBoxes() {
     BodyPolygon a = addBox(200+20*i,50,10);
     a.position.set(400,200+80*i);
   }
+  gravity.set(0,9.8);
 }
 
 void testPinnedBoxes() {
@@ -128,6 +129,8 @@ void testPinnedBoxes() {
   b.position.set(400-(150/2+10),400-20);
   pinPoint = new PVector(400-40,400);
   constraints.add(new PinConstraint(b,b.worldToLocal(pinPoint),pinPoint));
+  
+  gravity.set(0,9.8);
 }
 
 
@@ -163,6 +166,7 @@ BodyPolygon addBox(float w,float h,float m) {
   b.updateRadius();
   b.updateShape();
   b.setMass(m);
+  b.setMomentOfInertia(m * (sq(w)+sq(h))/12.0);
     
   return b;
 }
