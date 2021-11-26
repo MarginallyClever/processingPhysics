@@ -44,11 +44,9 @@ void setup() {
           .addItem("One box and one circle corner hit",6)
           .addItem("Stacked boxes",7)
           .addItem("Pinned boxes",8);
-    
-  camera.set(width/2,height/2,1);
-  //camera.set(0,0,1);
+  
   noFill();
-  createWorldEdges();
+  reset();
   tLast = millis();
 }
 
@@ -86,6 +84,11 @@ void reset() {
   paused=false;
   step=false;
   createWorldEdges();
+  resetCamera();
+}
+
+void resetCamera() {
+  camera.set(width/2,height/2,1);
 }
 
 void createWorldEdges() {
