@@ -70,13 +70,13 @@ class Manifold {
                            + sq(Rbn) * b.getInverseMomentOfInertia();
 
       float Jr = -(1.0f + e) * contactVel;
-      println("Ran="+Ran);
-      println("Rbn="+Rbn);
-      println("Jr="+Jr);
+      //println("Ran="+Ran);
+      //println("Rbn="+Rbn);
+      //println("Jr="+Jr);
       Jr /= inverseMassSum;
       Jr /= numContacts;
-      println("inverseMassSum="+inverseMassSum);
-      println("Jr after="+Jr);
+      //println("inverseMassSum="+inverseMassSum);
+      //println("Jr after="+Jr);
       
       a.applyImpulse( PVector.mult(normal,-Jr), Ra );
       b.applyImpulse( PVector.mult(normal, Jr), Rb );
@@ -95,17 +95,16 @@ class Manifold {
 
       float v = abs(Jt);
       
-      println("Jt="+Jt);
-      println("v="+v);
-      println("staticFriction="+staticFriction);
+      //println("Jt="+Jt);
+      //println("staticFriction="+staticFriction);
       
       if(v < 1e-6) continue;
-      if(v < Jt*staticFriction) {
-        println("static");
+      if(v < Jr*staticFriction) {
+        //println("static");
         tangentImpulse.mult(Jt);
       } else {
-        println("dynamic");
-        tangentImpulse.mult(-Jt*dynamicFriction);
+        //println("dynamic");
+        tangentImpulse.mult(-Jr*dynamicFriction);
       }
       a.applyImpulse( PVector.mult(tangentImpulse,-1), Ra);
       b.applyImpulse( tangentImpulse, Rb);
@@ -121,7 +120,7 @@ class Manifold {
     a.position.sub( PVector.mult(correction, a.getInverseMass()) );
     b.position.add( PVector.mult(correction, b.getInverseMass()) );
   }
-
+  
   void testCollision() {
     if(a instanceof BodyCircle) {
       if(b instanceof BodyCircle) {
