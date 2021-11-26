@@ -32,8 +32,8 @@ class PinConstraint extends Constraint {
     PVector Ra = aBody.getR(aPointW);
     aBody.applyImpulse(impulse,Ra);
     
-    PVector drift = PVector.sub(aPointW,bPoint);
-    aBody.position.sub(drift);
+    PVector drift = PVector.sub(bPoint,aPointW);
+    aBody.position.add(drift);
   }
 }
 
@@ -72,7 +72,7 @@ class HingeConstraint extends Constraint {
 
 class SpringConstraint extends Constraint {
   float restingLength;
-  float springConstant=0.25;
+  float springConstant=1.0;
   
   SpringConstraint(Body a,PVector aPoint,PVector bPoint) {
     aBody=a;
@@ -97,16 +97,21 @@ class SpringConstraint extends Constraint {
     PVector aPointW = getAPointWorld();
     PVector bPointW = getBPointWorld();
     
-    PVector diff = PVector.sub(bPointW,aPointW); 
+    PVector diff = PVector.sub(aPointW,bPointW); 
     float len = diff.mag();
     float x = len - restingLength;
-    float force = -springConstant * x;
-    float adjust = (len==0 ? 0 : force/len);
-    diff.mult(adjust);
+    float force = springConstant * x;
+    diff.normalize();
+    diff.mult(force);
+    
+    println("len="+len
+            +"\t"+"restingLength="+restingLength
+            +"\t"+"x="+x
+            +"\t"+"force="+force);
     
     float v = max(min(x,127),-127);
-    stroke(0,127+v,255);      
-    line(aPointW.x,aPointW.y,bPointW.x,bPointW.y);
+    stroke(0,127+v,255);
+    lineA2B(aPointW,bPointW);
     
     if(bBody!=null) {
       diff.mult(0.5);
