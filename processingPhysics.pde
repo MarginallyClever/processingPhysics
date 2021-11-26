@@ -376,6 +376,11 @@ boolean pointInTriangle(PVector pt,PVector v1,PVector v2,PVector v3) {
   return !(has_neg && has_pos);
 }
 
+float triangleArea(PVector a,PVector b,PVector c) {
+  return (a.x*(b.y-c.y) + b.x * (c.y-a.y) +c.x * (a.y-b.y)) / 2.0;
+}
+
+
 float pointInTriangleSign(PVector p1, PVector p2, PVector p3) {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
