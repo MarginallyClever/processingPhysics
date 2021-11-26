@@ -79,15 +79,16 @@ abstract class Body {
   }
   
   abstract public String toString();
-    
+  
+  // contactVector is relative to the center of the body, in world space
   void applyImpulse(PVector impulse,PVector contactVector) {
-    PVector linVel = PVector.mult( impulse,getInverseMass() );
+    PVector linVel = PVector.mult( impulse, getInverseMass() );
     stroke(255,128,255);
     line(position.x,
          position.y, 
          position.x+linVel.x, 
          position.y+linVel.y);
-      
+
     this.velocity.add( linVel );
     this.angularV.add( PVector.mult( contactVector.cross(impulse), getInverseMomentOfInertia() ) );
   }
