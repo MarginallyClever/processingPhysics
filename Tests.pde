@@ -131,6 +131,20 @@ void testPinnedBoxes() {
 }
 
 
+void testOneCircle() {
+  reset();
+  BodyCircle c = addCircle(100,100*2*PI);
+  c.position=new PVector(400,400);
+}
+
+
+void testOneBox() {
+  reset();
+  BodyPolygon c = addBox(50,400,400*50);
+  c.position=new PVector(400,400);
+}
+
+
 BodyCircle addCircle(float r,float m) {
   BodyCircle b = new BodyCircle(r,m);
   bodies.add(b);

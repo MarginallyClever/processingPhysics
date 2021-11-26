@@ -36,14 +36,16 @@ void setup() {
   d1 = cp5.addDropdownList("Choose test")
           .setPosition(20,20)
           .addItem("Random shapes",0)
-          .addItem("One box and one circle",1)
-          .addItem("Two circles",2)
-          .addItem("One ball and wall",3)
-          .addItem("One box and wall",4)
-          .addItem("Two boxes",5)
-          .addItem("One box and one circle corner hit",6)
-          .addItem("Stacked boxes",7)
-          .addItem("Pinned boxes",8);
+          .addItem("One circle",1)
+          .addItem("One box",2)
+          .addItem("One box and one circle",3)
+          .addItem("Two circles",4)
+          .addItem("One ball and wall",5)
+          .addItem("One box and wall",6)
+          .addItem("Two boxes",7)
+          .addItem("One box and one circle corner hit",8)
+          .addItem("Stacked boxes",9)
+          .addItem("Pinned boxes",10);
   
   noFill();
   reset();
@@ -63,14 +65,16 @@ void controlEvent(ControlEvent theEvent) {
       int i = (int)theEvent.getController().getValue();
       switch(i) {
       case 0:  testRandomShapes();  break;
-      case 1:  testOneBoxAndOneCircle();  break;
-      case 2:  testTwoCircles();  break;
-      case 3:  testOneBallAndWall();  break;
-      case 4:  testOneBoxAndWall();  break;
-      case 5:  testTwoBoxes();  break;
-      case 6:  testOneBoxAndOneCircleCornerHit();  break;
-      case 7:  testStackedBoxes();  break;
-      case 8:  testPinnedBoxes();  break;
+      case 1:  testOneCircle();  break;
+      case 2:  testOneBox();  break;
+      case 3:  testOneBoxAndOneCircle();  break;
+      case 4:  testTwoCircles();  break;
+      case 5:  testOneBallAndWall();  break;
+      case 6:  testOneBoxAndWall();  break;
+      case 7:  testTwoBoxes();  break;
+      case 8:  testOneBoxAndOneCircleCornerHit();  break;
+      case 9:  testStackedBoxes();  break;
+      case 10:  testPinnedBoxes();  break;
       default:  println("ERROR: controlEvent() undefined test.");  break;
       }
     }
