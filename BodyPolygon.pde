@@ -148,20 +148,44 @@ class BodyPolygon extends Body {
     return false;
   }
   
-  void updateMass(double scale) {
+  void computeMass(float density) {
     int count = points.size();
     if(count<3) setMass(0);
  
-    float m=0;
+    float area=0;
+    float moi=0;
     PVector p0 = points.get(0);
     PVector center = new PVector(0,0,0);
+    PVector newCenter = new PVector(0,0,0);
     
     for(int i=0; i<count; ++i) {
       int j = (i+1) % count;
       PVector p1 = points.get(j);
-      m += triangleArea(center,center,p0,p1);
+      
+      float a = triangleArea(center,p0,p1); 
+      area += a;
+      
+      // adjust center based on mass
+      PVector adj = PVector.mult(PVector.add(center,PVector.add(p0,p1)),1.0/3.0);
+      newCenter.add(adj);
+      
+      // adjust moment of inertia
+      float d = a*2;
+      float intx2 = p0.x * p0.x + p1.x * p0.x + p1.x * p1.x;
+      float inty2 = p0.y * p0.y + p1.y * p0.y + p1.y * p1.y;
+      moi += (0.25/3.0 * d) * (intx2 + inty2);
+      
       p0=p1;
     }
-    setMass(m);
+    
+    // adjust for new center
+    newCenter.mult(1.0/area);
+    for(int i=0; i<count; ++i) {
+      points.get(i).sub(newCenter);
+    }
+    
+    // set mass and moment of inertia
+    setMass(area * density);
+    setMomentOfInertia(moi * density);
   }
 }
