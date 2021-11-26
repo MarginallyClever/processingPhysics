@@ -100,15 +100,10 @@ class SpringConstraint extends Constraint {
     PVector diff = PVector.sub(aPointW,bPointW); 
     float len = diff.mag();
     float x = len - restingLength;
-    float force = springConstant * x;
+    float force = -springConstant * x;
     diff.normalize();
     diff.mult(force);
-    
-    println("len="+len
-            +"\t"+"restingLength="+restingLength
-            +"\t"+"x="+x
-            +"\t"+"force="+force);
-    
+ 
     float v = max(min(x,127),-127);
     stroke(0,127+v,255);
     lineA2B(aPointW,bPointW);
