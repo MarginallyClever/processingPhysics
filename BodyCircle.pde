@@ -8,7 +8,7 @@ class BodyCircle extends Body {
   public BodyCircle(float r,float m) {
     this.radius=r;
     this.setMass(m);
-    this.setMomentOfInertia(m * r*r*r*r * PI/4.0);
+    this.setMomentOfInertia(m * sq(r));
     updateShape();
   }
   
