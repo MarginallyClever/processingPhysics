@@ -59,7 +59,7 @@ void setup() {
   noFill();
   reset();
   
-  bodyToCursor.springConstant=50;
+  bodyToCursor.springConstant=10;
   
   tLast = millis();
 }
@@ -194,7 +194,7 @@ PVector getMouseWorld() {
 void beginDragShape() {
   if(!dragShapeOn && bodyUnderCursor!=null) {
     dragShapeOn=true;
-    println("beginDragShape");
+    //println("beginDragShape");
     bodyToCursor.aBody = bodyUnderCursor;
     PVector mouseWorld = getMouseWorld();
     bodyToCursor.aPoint.set(bodyUnderCursor.worldToLocal(mouseWorld));
@@ -212,7 +212,7 @@ void dragShape() {
 }
 
 void endDragShape() {
-  println("endDragShape");
+  //println("endDragShape");
   dragShapeOn=false;
 }
 
@@ -376,13 +376,13 @@ boolean pointInTriangle(PVector pt,PVector v1,PVector v2,PVector v3) {
   return !(has_neg && has_pos);
 }
 
-float triangleArea(PVector a,PVector b,PVector c) {
-  return (a.x*(b.y-c.y) + b.x * (c.y-a.y) +c.x * (a.y-b.y)) / 2.0;
+float pointInTriangleSign(PVector p1, PVector p2, PVector p3) {
+  return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
 
-
-float pointInTriangleSign(PVector p1, PVector p2, PVector p3) {
-    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+// see https://www.mathopenref.com/coordtrianglearea.html
+float triangleArea(PVector a,PVector b,PVector c) {
+  return abs((a.x*(b.y-c.y) + b.x*(c.y-a.y) + c.x*(a.y-b.y)) / 2.0);
 }
 
 
