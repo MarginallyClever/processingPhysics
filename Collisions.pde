@@ -18,45 +18,6 @@ void testAllCollisions() {
 }
 
 void testCollisionPolygonPolygon(Manifold m,BodyPolygon a,BodyPolygon b) {
-  //testCollisionPolygonPolygonOld(m,a,b);
-  testCollisionPolygonPolygonNew(m,a,b);
-}
-
-
-void testCollisionPolygonPolygonOld(Manifold m,BodyPolygon a,BodyPolygon b) {
-  float d2 = PVector.sub(a.position,b.position).magSq();
-  if(d2 > sq(a.radius+b.radius) ) return;
-  
-  PVector [] aCorners = a.getWorldPoints();
-  PVector [] bCorners = b.getWorldPoints();
-  
-  int aSize = aCorners.length;
-  int bSize = bCorners.length;
-  
-  //println(a.position+"\tvs\t"+b.position);
-  for(int a1=0;a1<aSize;++a1) {
-    int a2=(a1+1)%aSize;
-    PVector p1 = aCorners[a1];
-    PVector p2 = aCorners[a2];
-    
-    for(int b1=0;b1<bSize;++b1) {
-      int b2=(b1+1)%bSize;
-      PVector p3 = bCorners[b1];
-      PVector p4 = bCorners[b2];
-      
-      if(doIntersect(p1,p2,p3,p4)) {
-        PVector p = lineLineIntersection(p1,p2,p3,p4);
-        if(p!=null) {
-          m.normal = getNormalTo(p1,p2);
-          m.contacts.add(p);
-        }
-      }
-    }
-  }
-}
-
-
-void testCollisionPolygonPolygonNew(Manifold m,BodyPolygon a,BodyPolygon b) {
   // which polygon is inside the other the most?
   
   BestFitPair fitA = findAxisLeastPenetration(a,b);
