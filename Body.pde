@@ -5,7 +5,7 @@ abstract class Body {
   private float momentOfInertia = 1;
   private float inverseMomentOfInertia = 1;
   
-  public float restitution = 0.8;
+  public float restitution = 0.98;
   public float staticFriction = 0.75;
   public float dynamicFriction = 0.5;
 
@@ -84,10 +84,10 @@ abstract class Body {
   void applyImpulse(PVector impulse,PVector contactVector) {
     PVector linVel = PVector.mult( impulse, getInverseMass() );
     stroke(255,128,255);
-    line(position.x,
-         position.y, 
-         position.x+linVel.x*50, 
-         position.y+linVel.y*50);
+    line(position.x+contactVector.x,
+         position.y+contactVector.y, 
+         position.x+contactVector.x+linVel.x*50, 
+         position.y+contactVector.y+linVel.y*50);
 
     this.velocity.add( linVel );
     this.angularV.add( PVector.mult( contactVector.cross(impulse), getInverseMomentOfInertia() ) );
