@@ -3,7 +3,7 @@ void testOneBallAndWall() {
   println("testOneBallAndWall()");
   reset();
   
-  BodyCircle a = addCircle(40,5);  
+  BodyCircle a = addCircle(40,1);  
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
   a.angularV.set(0,0,radians(10));
@@ -13,7 +13,7 @@ void testOneBoxAndWall() {
   println("testOneBallAndWall()");
   reset();
   
-  BodyPolygon a = addBox(30*4,20*4,15);
+  BodyPolygon a = addBox(30*4,20*4,1);
   a.position.set(width/2-50,height/2-15);
   a.velocity.set(50,40);
   a.angularV.set(0,0,radians(10));
@@ -24,8 +24,8 @@ void testTwoBoxes() {
   reset();
   bodies.clear();
   
-  BodyPolygon a = addBox(30*4,20*4,5);
-  BodyPolygon b = addBox(30*4,40*4,10);
+  BodyPolygon a = addBox(30*4,20*4,1);
+  BodyPolygon b = addBox(30*4,40*4,1);
   
   a.position.set(width/2-100,height/2-15);
   b.position.set(width/2+100,height/2);
@@ -39,8 +39,8 @@ void testTwoCircles() {
   println("testTwoCircles()");
   reset();
   
-  BodyCircle a = addCircle(15,5);
-  BodyCircle b = addCircle(30,10);
+  BodyCircle a = addCircle(15,1);
+  BodyCircle b = addCircle(30,1);
   
   a.position.set(width/2-50,height/2-15);
   b.position.set(width/2+50,height/2);
@@ -54,8 +54,8 @@ void testOneBoxAndOneCircle() {
   println("testOneBoxAndOneCircle()");
   reset();
   
-  BodyCircle a = addCircle(50,10);
-  BodyPolygon b = addBox(5*20,10*20,20);
+  BodyCircle a = addCircle(50,1);
+  BodyPolygon b = addBox(5*20,10*20,1);
   b.updateRadius();
   b.myColor = color(128,0,0);
 
@@ -69,8 +69,8 @@ void testOneBoxAndOneCircleCornerHit() {
   println("testOneBoxAndOneCircleCornerHit()");
   reset();
   
-  BodyCircle a = addCircle(50,10);
-  BodyPolygon b = addBox(5*20,5*20,20);
+  BodyCircle a = addCircle(50,1);
+  BodyPolygon b = addBox(5*20,5*20,1);
   b.updateRadius();
   b.myColor = color(128,0,0);
 
@@ -89,15 +89,15 @@ void testRandomShapes() {
   for(int i=0;i<20;++i) {
     int dice = (int)random(1,20);
     if(i<8) {
-      BodyCircle b = addCircle(random(5,30),random(1,6));
+      BodyCircle b = addCircle(random(5,30),1);
       b.position.set(random(width-b.radius*2)+b.radius,
                      random(height-b.radius*2)+b.radius);
     } else if(i<16) {
-      BodyPolygon b = addBox(random(10,50),random(20,40),random(2,8));
+      BodyPolygon b = addBox(random(10,50),random(20,40),1);
       b.position.set(random(width-b.radius*2)+b.radius,
                      random(height-b.radius*2)+b.radius);
     } else {
-      BodyPolygon b = addMeteor(random(25,30),random(30,40),random(2,8));
+      BodyPolygon b = addMeteor(random(25,30),random(30,40),1);
       b.position.set(random(width-b.radius*2)+b.radius,
                      random(height-b.radius*2)+b.radius);
     }
@@ -111,7 +111,7 @@ void testStackedBoxes() {
   reset();
   
   for(int i=0;i<6;++i) {
-    BodyPolygon a = addBox(200+20*i,50,10);
+    BodyPolygon a = addBox(200+20*i,50,1);
     a.position.set(400,200+80*i);
   }
   gravity.set(0,9.8);
@@ -120,12 +120,12 @@ void testStackedBoxes() {
 void testPinnedBoxes() {
   reset();
   
-  BodyPolygon a = addBox(150,50,150*50);
+  BodyPolygon a = addBox(150,50,1);
   a.position.set(400+(150/2+10),400-20);
   PVector pinPoint = new PVector(400+20,400);
   constraints.add(new PinConstraint(a,a.worldToLocal(pinPoint),pinPoint));
     
-  BodyPolygon b = addBox(150,50,150*50);
+  BodyPolygon b = addBox(150,50,1);
   b.position.set(400-(150/2+10),400-20);
   pinPoint = new PVector(400-40,400);
   constraints.add(new PinConstraint(b,b.worldToLocal(pinPoint),pinPoint));
@@ -136,26 +136,26 @@ void testPinnedBoxes() {
 
 void testOneCircle() {
   reset();
-  BodyCircle c = addCircle(100,100*2*PI);
+  BodyCircle c = addCircle(100,1);
   c.position=new PVector(400,400);
 }
 
 
 void testOneBox() {
   reset();
-  BodyPolygon c = addBox(50,400,400*50);
+  BodyPolygon c = addBox(50,400,1);
   c.position=new PVector(400,400);
 }
 
 
 BodyCircle addCircle(float r,float m) {
-  BodyCircle b = new BodyCircle(r,m);
+  BodyCircle b = new BodyCircle(r,m * PI * sq(r));
   bodies.add(b);
   return b;
 }
 
 BodyPolygon addBox(float w,float h,float m) {
-  println("addBox()");
+  //println("addBox()");
   BodyPolygon b = new BodyPolygon();
   bodies.add(b);
   
@@ -165,14 +165,13 @@ BodyPolygon addBox(float w,float h,float m) {
   b.points.add(new PVector(-w/2, h/2));
   b.updateRadius();
   b.updateShape();
-  b.setMass(m);
-  b.setMomentOfInertia(m * (sq(w)+sq(h))/12.0);
+  b.computeMass(m);
     
   return b;
 }
 
 BodyPolygon addBox(PVector a,PVector b) {
-  println("addBox()");
+  //println("addBox()");
   BodyPolygon box = addBox(b.x-a.x,b.y-a.y,1);
   box.position.set((a.x+b.x)/2,
                    (a.y+b.y)/2);
@@ -180,7 +179,7 @@ BodyPolygon addBox(PVector a,PVector b) {
 }
 
 BodyPolygon addMeteor(float rMin,float rMax,float m) {
-  println("addMeteor()");
+  //println("addMeteor()");
   BodyPolygon b = new BodyPolygon();
   bodies.add(b);
   int count = (int)random(4,20);
@@ -191,7 +190,7 @@ BodyPolygon addMeteor(float rMin,float rMax,float m) {
   }
   b.updateRadius();
   b.updateShape();
-  b.setMass(m);
+  b.computeMass(m);
 
   return b;
 }
