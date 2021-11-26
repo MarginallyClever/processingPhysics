@@ -40,6 +40,7 @@ class Manifold {
     }
         
     //println("M: "+toString());
+    normal.normalize();
     
     for( PVector p : contacts ) {
       PVector Va = a.getCombinedVelocityAtPoint(p);
@@ -52,10 +53,10 @@ class Manifold {
       //println("normal="+normal);
 
       stroke(  0,  0,255);  circle(p.x,p.y,5);
-      //stroke(  0,  0,255);  line(p.x,p.y, p.x+normal.x*10,         p.y+normal.y*10);
-      stroke(128,128,255);  line(p.x,p.y, p.x+normal.x*contactVel, p.y+normal.y*contactVel);
-      stroke(255,  0,  0);  line(p.x,p.y, p.x+Vb.x,             p.y+Vb.y);
-      stroke(  0,255,  0);  line(p.x,p.y, p.x+Va.x,             p.y+Va.y);
+      //stroke(  0,  0,255);  lineAPlusB(p, PVector.mult(normal,10));
+      stroke(128,128,255);  lineAPlusB(p, PVector.mult(normal,contactVel));
+      stroke(255,  0,  0);  lineAPlusB(p, Vb);
+      stroke(  0,255,  0);  lineAPlusB(p, Va);
       
       if(contactVel>0) continue;
     
@@ -64,43 +65,50 @@ class Manifold {
       float Ran = Ra.cross(normal).z;
       float Rbn = Rb.cross(normal).z;
       float inverseMassSum = a.getInverseMass() 
-                            + b.getInverseMass() 
-                            + sq(Ran) * a.getInverseMomentOfInertia() 
-                            + sq(Rbn) * b.getInverseMomentOfInertia();
+                           + b.getInverseMass() 
+                           + sq(Ran) * a.getInverseMomentOfInertia() 
+                           + sq(Rbn) * b.getInverseMomentOfInertia();
 
       float Jr = -(1.0f + e) * contactVel;
+      println("Ran="+Ran);
+      println("Rbn="+Rbn);
+      println("Jr="+Jr);
       Jr /= inverseMassSum;
       Jr /= numContacts;
-      //println("inverseMassSum="+inverseMassSum);
-      //println("Jr="+Jr);
+      println("inverseMassSum="+inverseMassSum);
+      println("Jr after="+Jr);
       
       a.applyImpulse( PVector.mult(normal,-Jr), Ra );
       b.applyImpulse( PVector.mult(normal, Jr), Rb );
 
       // Friction
-      PVector impulse = getFrictionImpulse(p,inverseMassSum,numContacts,Jr);
-      a.applyImpulse( PVector.mult(impulse,-1), Ra);
-      b.applyImpulse( impulse, Rb);
-    }
-  }
-  
-  PVector getFrictionImpulse(PVector p,float inverseMassSum,float numContacts,float Jr) {
-    PVector Va = a.getCombinedVelocityAtPoint(p);
-    PVector Vb = b.getCombinedVelocityAtPoint(p);
-    PVector Vr = PVector.sub(Vb,Va);
-    PVector t = PVector.sub(Vr,PVector.mult(normal,Vr.dot(normal)));
-    t.normalize();
-    
-    float Jt = -Vr.dot(t);
-    Jt /= inverseMassSum;
-    Jt /= numContacts;
-    
-    float v = abs(Jt);
-    if(v < 1e-6) return new PVector(0,0,0);
-    if(v < Jr*staticFriction) {
-      return t.mult(Jt);
-    } else {
-      return t.mult(-Jr*dynamicFriction);
+      // tangentImpulse is at a right angle to normal
+      PVector tangentImpulse = PVector.sub(Vr,PVector.mult(normal,PVector.dot(Vr,normal)));
+      
+      stroke(255,0,255);  lineAPlusB(p,tangentImpulse);
+      
+      tangentImpulse.normalize();
+      
+      float Jt = -Vr.dot(tangentImpulse);
+      Jt /= inverseMassSum;
+      Jt /= numContacts;
+
+      float v = abs(Jt);
+      
+      println("Jt="+Jt);
+      println("v="+v);
+      println("staticFriction="+staticFriction);
+      
+      if(v < 1e-6) continue;
+      if(v < Jt*staticFriction) {
+        println("static");
+        tangentImpulse.mult(Jt);
+      } else {
+        println("dynamic");
+        tangentImpulse.mult(-Jt*dynamicFriction);
+      }
+      a.applyImpulse( PVector.mult(tangentImpulse,-1), Ra);
+      b.applyImpulse( tangentImpulse, Rb);
     }
   }
   
@@ -123,8 +131,10 @@ class Manifold {
       }
     } else if(a instanceof BodyPolygon) {
       if(b instanceof BodyCircle) {
-        testCollisionCirclePolygon(this,(BodyCircle)b,(BodyPolygon)a);
-        this.normal.mult(-1);
+        Body temp=a;
+        a=b;
+        b=temp;
+        testCollisionCirclePolygon(this,(BodyCircle)a,(BodyPolygon)b);
       } else if(b instanceof BodyPolygon) {
         testCollisionPolygonPolygon(this,(BodyPolygon)a,(BodyPolygon)b);
       }
