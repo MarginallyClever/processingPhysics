@@ -137,15 +137,13 @@ void testHingedBoxes() {
   reset();
   
   BodyPolygon a = addBox(150,50,1);
-  a.position.set(400+(150/2+10),400-20);
-  PVector pinPoint = new PVector(400+20,400);
-    
   BodyPolygon b = addBox(150,50,1);
+  
+  a.position.set(400+(150/2+10),400-20);
   b.position.set(400-(150/2+10),400-20);
-  
+
+  PVector pinPoint = new PVector(400,400);
   constraints.add(new HingeConstraint(a,a.worldToLocal(pinPoint),b,b.worldToLocal(pinPoint)));
-  
-//  gravity.set(0,9.8);
 }
 
 

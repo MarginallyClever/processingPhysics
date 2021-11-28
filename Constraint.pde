@@ -55,18 +55,22 @@ class HingeConstraint extends Constraint {
   
   void resolveConstraint() {
     PVector aPointW = aBody.localToWorld(aPoint);
+    PVector bPointW = bBody.localToWorld(bPoint);
     stroke(255,0,255);
     drawStar(aPointW,5);
     stroke(255,255,0);
-    drawStar(bPoint,5);
+    drawStar(bPointW,5);
     
-    PVector impulse = aBody.getCombinedVelocityAtPoint(aPointW);
-    impulse.mult(-1);
+    PVector rV = PVector.sub(bBody.getCombinedVelocityAtPoint(bPointW),
+                             aBody.getCombinedVelocityAtPoint(aPointW));
     PVector Ra = aBody.getR(aPointW);
-    aBody.applyImpulse(impulse,Ra);
+    aBody.applyImpulse(PVector.mult(rV,-0.5),Ra);
+    PVector Rb = bBody.getR(bPointW);
+    aBody.applyImpulse(PVector.mult(rV,0.5),Rb);
     
-    PVector drift = PVector.sub(aPointW,bPoint);
-    aBody.position.sub(drift);
+    PVector drift = PVector.sub(bPointW,aPointW).mult(0.5);
+    aBody.position.add(drift);
+    bBody.position.sub(drift);
   }
 }
 
