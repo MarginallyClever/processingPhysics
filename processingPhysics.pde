@@ -54,7 +54,8 @@ void setup() {
           .addItem("Two boxes",7)
           .addItem("One box and one circle corner hit",8)
           .addItem("Stacked boxes",9)
-          .addItem("Pinned boxes",10);
+          .addItem("Pinned boxes",10)
+          .addItem("Hinged boxes",11);
   
   noFill();
   reset();
@@ -87,6 +88,7 @@ void controlEvent(ControlEvent theEvent) {
       case 8:  testOneBoxAndOneCircleCornerHit();  break;
       case 9:  testStackedBoxes();  break;
       case 10:  testPinnedBoxes();  break;
+      case 11:  testHingedBoxes();  break;
       default:  println("ERROR: controlEvent() undefined test.");  break;
       }
     }

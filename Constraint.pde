@@ -46,8 +46,9 @@ class FixedConstraint extends Constraint {
 
 // two bodies that pinned to each other
 class HingeConstraint extends Constraint {
-  HingeConstraint(Body a,PVector aPoint,PVector bPoint) {
+  HingeConstraint(Body a,PVector aPoint,Body b,PVector bPoint) {
     aBody=a;
+    bBody=b;
     this.aPoint.set(aPoint);
     this.bPoint.set(bPoint);
   }
