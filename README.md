@@ -14,6 +14,10 @@ mouse wheel roll: zoom camera
 mouse left + drag: create rubber band between cursor and body at start of action.
 mouse right + drag: create impulse force the moment button is released.
 
+## join us!
+
+Make it even better.  We welcome your input.  Join the conversation at https://discord.gg/Q5TZFmB
+
 ## video
 
 [![Click to watch](2021-11-05-02.PNG)](https://www.youtube.com/watch?v=SJy6yZOul2w)
