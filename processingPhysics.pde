@@ -71,8 +71,7 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isGroup()) {
     // check if the Event was triggered from a ControlGroup
     println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
-  } 
-  else if (theEvent.isController()) {
+  } else if (theEvent.isController()) {
     println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
     if(theEvent.getController()==d1) {
       int i = (int)theEvent.getController().getValue();
@@ -272,8 +271,6 @@ void draw() {
   }
   step=false;
   
-  if(dt==0) return;
-  
   background(255,255,255);
   pushMatrix();
   scale(camera.z);
@@ -283,14 +280,30 @@ void draw() {
   );
   
   PVector mouseWorld = getMouseWorld();
-  stroke(255,0,0);
-  drawStar(mouseWorld,20);
-  stroke(0,255,0);
-  drawStar(camera,10);
+  stroke(255,0,0);  drawStar(mouseWorld,20);
+  stroke(0,255,0);  drawStar(camera,10);
   
   contacts.clear();
-  
   testAllCollisions();
+  for( Manifold m : contacts ) m.render();
+  
+  if(dt!=0) {
+    stepPhysics(dt);
+  }
+  
+  for( Body b : bodies ) {
+    b.render();
+  }
+  
+  dragShape();
+  updateBodyUnderCursor(mouseWorld);
+  highlightBodyUnderCursor();
+  drawApplyImpulse();
+  
+  popMatrix();
+}
+
+void stepPhysics(float dt) {
   
   for( Body b : bodies ) {
     b.integrateForces(dt);
@@ -316,17 +329,6 @@ void draw() {
     b.force.set(0,0,0);
     b.torque.set(0,0,0);
   }
-  
-  for( Body b : bodies ) {
-    b.render();
-  }
-  
-  dragShape();
-  updateBodyUnderCursor(mouseWorld);
-  highlightBodyUnderCursor();
-  drawApplyImpulse();
-  
-  popMatrix();
 }
 
 void updateBodyUnderCursor(PVector mouseWorld) {

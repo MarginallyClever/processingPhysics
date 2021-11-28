@@ -29,6 +29,27 @@ class Manifold {
       +"]";
   }
   
+  void render() {
+    float numContacts = contacts.size();
+    if(numContacts==0) return;
+    
+    for( PVector p : contacts ) {
+      PVector Va = a.getCombinedVelocityAtPoint(p);
+      PVector Vb = b.getCombinedVelocityAtPoint(p);
+      PVector Vr = PVector.sub(Vb,Va);
+      float contactVel = PVector.dot(Vr,normal);
+      if(contactVel>0) continue;
+      
+      stroke(  0,  0,255);  circle(p.x,p.y,5);
+      stroke(128,128,255);  lineAPlusB(p, PVector.mult(normal,contactVel));
+      stroke(255,  0,  0);  lineAPlusB(p, Vb);
+      stroke(  0,255,  0);  lineAPlusB(p, Va);
+      
+      PVector tangentImpulse = PVector.sub(Vr,PVector.mult(normal,PVector.dot(Vr,normal)));
+      stroke(255,0,255);  lineAPlusB(p,tangentImpulse);
+    }
+  }
+  
   void resolveCollisions() {
     float numContacts = contacts.size();
     if(numContacts==0) return;
@@ -51,12 +72,6 @@ class Manifold {
       //println("Vr="+Vr);
       //println("contactVel="+contactVel);
       //println("normal="+normal);
-
-      stroke(  0,  0,255);  circle(p.x,p.y,5);
-      //stroke(  0,  0,255);  lineAPlusB(p, PVector.mult(normal,10));
-      stroke(128,128,255);  lineAPlusB(p, PVector.mult(normal,contactVel));
-      stroke(255,  0,  0);  lineAPlusB(p, Vb);
-      stroke(  0,255,  0);  lineAPlusB(p, Va);
       
       if(contactVel>0) continue;
     
@@ -84,8 +99,6 @@ class Manifold {
       // Friction
       // tangentImpulse is at a right angle to normal
       PVector tangentImpulse = PVector.sub(Vr,PVector.mult(normal,PVector.dot(Vr,normal)));
-      
-      stroke(255,0,255);  lineAPlusB(p,tangentImpulse);
       
       tangentImpulse.normalize();
       
