@@ -55,7 +55,8 @@ void setup() {
           .addItem("One box and one circle corner hit",8)
           .addItem("Stacked boxes",9)
           .addItem("Pinned boxes",10)
-          .addItem("Hinged boxes",11);
+          .addItem("Hinged boxes",11)
+          .close();
   
   noFill();
   reset();
